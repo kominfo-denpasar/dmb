@@ -448,7 +448,7 @@ class FrontController extends Controller
 		->whereIn('status', [0, 1])
 		->first();
 
-		dd($keluhan);
+		// dd($keluhan);
 
 		if($keluhan && $konseling) {
 			// dd('test');
@@ -467,7 +467,6 @@ class FrontController extends Controller
 		} else {
 			return redirect()->route('front.survei-intro');
 		}
-		
 	}
 
 	/**
@@ -499,7 +498,8 @@ class FrontController extends Controller
 			// jika sudah mengisi keluhan tetapi belum mengisi jadwal
 
 			// get data master psikolog
-			$psikolog = Psikolog::get();
+			$psikolog = Psikolog::where('status', 1)
+				->get();
 
 			return view('front.konseling_jadwal', [
 				'masyarakat' => $masyarakat,
