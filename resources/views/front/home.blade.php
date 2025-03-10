@@ -120,9 +120,9 @@
 							<div class="flex gap-4">
 								
 								@if($data->foto==null || !file_exists(storage_path('app/public/uploads/psikolog/'.$data->foto)))
-								<img class="h-32 w-32 rounded-full" src="{{ asset('img/pp_user.jpg') }}" alt="user avatar" width="400" height="400" loading="lazy">
+								<img class="h-32 w-32 rounded-full object-contain" src="{{ asset('img/pp_user.jpg') }}" alt="user avatar" width="400" height="400" loading="lazy">
 								@elseif(file_exists(storage_path('app/public/uploads/psikolog/'.$data->foto)))
-								<img class="h-32 w-32 rounded-full" src="{{ asset('storage/uploads/psikolog/'.$data->foto) }}" alt="user avatar" width="400" height="400" loading="lazy">
+								<img class="h-32 w-32 rounded-full object-contain" src="{{ asset('storage/uploads/psikolog/'.$data->foto) }}" alt="user avatar" width="400" height="400" loading="lazy">
 								@endif
 								<div>
 									<h6 class="text-lg font-medium text-red-600 leading-tight">{{ $data->nama }}</h6>

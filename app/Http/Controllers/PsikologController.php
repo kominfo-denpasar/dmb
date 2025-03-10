@@ -12,7 +12,7 @@ use Flash;
 
 use App\Models\Psikolog;
 use App\Models\User;
-use App\Models\Keluhan;
+use App\Models\keluhan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\Datatables\Datatables;
 
@@ -267,9 +267,9 @@ class PsikologController extends AppBaseController
 		->editColumn('hp', function($sql){
             return "<a href='tel:62$sql->hp'>0".$sql->hp."</a>";
         })
-		->editColumn('kec_id', function($sql){
-            return $this->kec($sql->kec_id);
-        })
+		//->editColumn('kec_id', function($sql){
+            //return $this->kec($sql->kec_id);
+        //})
         ->editColumn('status', function($sql){
             if($sql->status==0) {
                 return "<span class='badge bg-danger'> Tidak Aktif </span>";

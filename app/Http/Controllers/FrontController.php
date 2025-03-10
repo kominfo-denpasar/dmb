@@ -436,25 +436,19 @@ class FrontController extends Controller
 
 		// cek data keluhan
 		$keluhan = keluhan::where([
-			'mas_id' => $id,
-			'status' => 0
+			'mas_id' => $id
 			])
-		->orWhere([
-			'mas_id' => $id,
-			'status' => 1
-		])
+		->whereIn('status', [0, 1])
 		->first();
 
 		// cek data konseling
 		$konseling = Konseling::where([
-			'mas_id' => $id,
-			'status' => 0
-		])->orWhere([
-			'mas_id' => $id,
-			'status' => 1
-		])->first();
+			'mas_id' => $id
+		])
+		->whereIn('status', [0, 1])
+		->first();
 
-		// dd($keluhan);
+		dd($keluhan);
 
 		if($keluhan && $konseling) {
 			// dd('test');
