@@ -27,7 +27,7 @@
 					</div>
 				@endif
 			</div>
-			<div class="col-lg-8">
+			<div class="col-lg-9">
 				<div class="row">
 					<div class="col-12 col-sm-6 col-md-4">
 						<div class="info-box">
@@ -141,11 +141,15 @@
 			</div>
 			<!-- .col-lg-6 -->
 
-			<div class="col-lg-4">
+			<div class="col-lg-3">
 				<div class="card card-primary card-outline">
 					<div class="card-body box-profile">
 						<div class="text-center">
-							<img class="profile-user-img img-fluid img-circle" src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Pale" alt="User profile picture">
+							@if($psikolog->foto)
+							<img style="width: 100%;" class="profile-user-img img-fluid img-circle" src="{{asset('storage/uploads/psikolog/'.$psikolog->foto)}}" alt="User profile picture">
+							@else
+							<img style="width: 100%;" class="profile-user-img img-fluid img-circle" src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairFrida&accessoriesType=Blank&hairColor=Black&facialHairType=Blank&clotheType=BlazerShirt&eyeType=Default&eyebrowType=Default&mouthType=Default&skinColor=Pale" alt="User profile picture">
+							@endif
 						</div>
 
 						<h3 class="profile-username text-center">{{$psikolog->nama}}</h3>

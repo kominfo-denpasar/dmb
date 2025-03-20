@@ -39,7 +39,7 @@ class FrontController extends Controller
 	public function index()
 	{
 		// dd(\App::getLocale());
-		$psikolog = Psikolog::where('status', 1)->inRandomOrder()->get();
+		$psikolog = Psikolog::where('status', 1)->take(3)->inRandomOrder()->get();
 		$blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
 					->select(
 						'blogs.judul', 

@@ -267,9 +267,22 @@ class PsikologController extends AppBaseController
 		->editColumn('hp', function($sql){
             return "<a href='tel:62$sql->hp'>0".$sql->hp."</a>";
         })
-		//->editColumn('kec_id', function($sql){
-            //return $this->kec($sql->kec_id);
-        //})
+		->editColumn('kec_id', function($sql){
+            switch($sql->kec_id) {
+				case '5171010':
+					return "Denpasar Selatan";
+					break;
+				case '5171020':
+					return "Denpasar Timur";
+					break;
+				case '5171030':
+					return "Denpasar Barat";
+					break;
+				case '5171031':
+					return "Denpasar Utara";
+					break;
+			}
+        })
         ->editColumn('status', function($sql){
             if($sql->status==0) {
                 return "<span class='badge bg-danger'> Tidak Aktif </span>";
