@@ -87,6 +87,24 @@ class PsikologController extends AppBaseController
 			$input['foto'] = $month_folder.'/'.$file_name;
 		}
 
+		//upload image
+		if($request->file('ttd')) {
+			$file = $request->file('ttd');
+			$file_name = time().'_'.$file->getClientOriginalName();
+
+			$year_folder = date("Y");
+			$month_folder = $year_folder . '/' . date("m");
+
+			$path = 'uploads/psikolog/'.$month_folder.'/'.$file_name;
+
+			$file_content = file_get_contents($file);
+			if(!Storage::disk('public')->put($path, $file_content)) {
+				return false;
+			}
+
+			$input['ttd'] = $month_folder.'/'.$file_name;
+		}
+
 		$psikolog = $this->psikologRepository->create($input);
 
 		// buat user baru
@@ -192,6 +210,30 @@ class PsikologController extends AppBaseController
 			}
 
 			$input['foto'] = $month_folder.'/'.$file_name;
+		}
+
+		//upload ttd
+		if($request->file('ttd')) {
+			// hapus file lama
+			$old_file = Psikolog::where('id', $id)->first();
+			if($old_file->ttd) {
+				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->ttd));
+			}
+
+			$file = $request->file('ttd');
+			$file_name = time().'_'.$file->getClientOriginalName();
+
+			$year_folder = date("Y");
+			$month_folder = $year_folder . '/' . date("m");
+
+			$path = 'uploads/psikolog/'.$month_folder.'/'.$file_name;
+
+			$file_content = file_get_contents($file);
+			if(!Storage::disk('public')->put($path, $file_content)) {
+				return false;
+			}
+
+			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
 		$psikolog = $this->psikologRepository->update($input, $id);

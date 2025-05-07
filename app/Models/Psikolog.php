@@ -20,6 +20,7 @@ class Psikolog extends Model
         'foto',
         'kec_id',
         'desa_id',
+        'ttd',
         'user_id',
         'status'
     ];
@@ -36,6 +37,7 @@ class Psikolog extends Model
         'foto' => 'string',
         'kec_id' => 'string',
         'desa_id' => 'string',
+        'ttd' => 'string',
         'user_id' => 'integer',
         'status' => 'string'
     ];

@@ -58,13 +58,31 @@
 </div>
 <div class="clearfix"></div>
 
+<!-- Gambar Field -->
+<div class="form-group col-sm-8 offset-sm-2">
+    {!! Form::label('ttd', 'TTD') !!}
+    <div class="input-group">
+        @if($psikolog && $psikolog->ttd)
+            <!-- cek apakah file ada di folder -->
+            @if(file_exists(storage_path('app/public/uploads/psikolog/'.$psikolog->ttd)))
+                <img class="img-fluid col-12" src="{{asset('storage/uploads/psikolog/'.$psikolog->ttd)}}" style="height:20%">
+            @else
+                <img class="img-fluid col-12" src="{{asset('img/pp_user.jpg')}}" style="height:20%">
+            @endif
+        @endif
+        <div class="col-12 custom-file" style="margin-top: 15px;">
+            {!! Form::file('ttd', ['class' => 'custom-file-input']) !!}
+            {!! Form::label('ttd', 'Choose file', ['class' => 'custom-file-label']) !!}
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>
+
 <!-- Field -->
 <div class="form-group col-sm-8 offset-sm-2">
     {!! Form::label('alamat_rumah', 'Alamat Rumah') !!}
     {!! Form::textarea('alamat_rumah', null, ['class' => 'form-control', 'required']) !!}
 </div>
-
-
 
 <div class="col-md-12">
     <hr>

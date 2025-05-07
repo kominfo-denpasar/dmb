@@ -59,17 +59,6 @@
 				<!-- .field -->
 
 				<div class="field">
-					<label class="label">Hari & Jam Konseling</label>
-					<div class="field-body">
-						<div class="field">
-							<div class="control">
-								<select name="jadwal_id" id="jadwal_id" class="w-full p-2 input" required="">
-									<option value="">Pilih</option>
-								</select>
-							</div>
-							<p class="help">Pilih psikolog dahulu sebelum memilih hari & jam konseling</p>
-						</div>
-					</div>
 					<div class="field">
 						<label class="label">Tanggal Konseling</label>
 						<div class="field-body">
@@ -82,6 +71,18 @@
 						</div>
 					</div>
 					<!-- .field -->
+					<label class="label">Hari & Jam Konseling</label>
+					<div class="field-body">
+						<div class="field">
+							<div class="control">
+								<select name="jadwal_id" id="jadwal_id" class="w-full p-2 input" required="">
+									<option value="">Pilih</option>
+								</select>
+							</div>
+							<p class="help">Pilih psikolog dahulu sebelum memilih hari & jam konseling</p>
+						</div>
+					</div>
+					
 				</div>
 				<!-- .field -->
 
