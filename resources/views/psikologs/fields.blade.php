@@ -58,6 +58,10 @@
 </div>
 <div class="clearfix"></div>
 
+<div class="col-md-12">
+    <hr>
+</div>
+
 <!-- Gambar Field -->
 <div class="form-group col-sm-8 offset-sm-2">
     {!! Form::label('ttd', 'TTD') !!}
@@ -77,6 +81,10 @@
     </div>
 </div>
 <div class="clearfix"></div>
+
+<div class="col-md-12">
+    <hr>
+</div>
 
 <!-- Field -->
 <div class="form-group col-sm-8 offset-sm-2">
