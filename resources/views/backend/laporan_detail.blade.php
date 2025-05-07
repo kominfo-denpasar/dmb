@@ -241,7 +241,14 @@
 						<!-- /.col -->
 						<div class="col-6 text-center mb-5">
 							<p class="text-center" style="margin-bottom: 2px;font-weight:bold">Denpasar, {{\Carbon\Carbon::parse()->format('d M Y')}}</p>
-							<p class="text-center well well-sm shadow-none" style="margin-top: 75px;margin-bottom: 0px;font-weight:bold">
+							
+							@if(file_exists(storage_path('app/public/uploads/psikolog/'.$data->ttd)))
+								<img class="img-fluid col-12" src="{{asset('storage/uploads/psikolog/'.$data->ttd)}}" style="height:30%;width:auto;margin-top:5px;">
+							@else
+								<img class="img-fluid col-12" src="{{asset('img/pp_user.jpg')}}" style="height:20%;width:auto">
+							@endif
+
+							<p class="text-center well well-sm shadow-none" style="margin-top: 5px;margin-bottom: 0px;font-weight:bold">
 								<u>({{$data->psikolog_nama}})</u>
 							</p>
 							<span class="text-muted">{{$data->sipp}}</span>
