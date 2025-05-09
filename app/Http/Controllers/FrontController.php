@@ -39,7 +39,7 @@ class FrontController extends Controller
 	public function index()
 	{
 		// dd(\App::getLocale());
-		$psikolog = Psikolog::where('status', 1)->inRandomOrder()->get();
+		$psikolog = Psikolog::where('status', 1)->take(3)->inRandomOrder()->get();
 		$blog = Blog::join('users', 'blogs.user_id', '=', 'users.id')
 					->select(
 						'blogs.judul', 
@@ -436,23 +436,17 @@ class FrontController extends Controller
 
 		// cek data keluhan
 		$keluhan = keluhan::where([
-			'mas_id' => $id,
-			'status' => 0
+			'mas_id' => $id
 			])
-		->orWhere([
-			'mas_id' => $id,
-			'status' => 1
-		])
+		->whereIn('status', [0, 1])
 		->first();
 
 		// cek data konseling
 		$konseling = Konseling::where([
-			'mas_id' => $id,
-			'status' => 0
-		])->orWhere([
-			'mas_id' => $id,
-			'status' => 1
-		])->first();
+			'mas_id' => $id
+		])
+		->whereIn('status', [0, 1])
+		->first();
 
 		// dd($keluhan);
 
@@ -473,7 +467,6 @@ class FrontController extends Controller
 		} else {
 			return redirect()->route('front.survei-intro');
 		}
-		
 	}
 
 	/**
@@ -505,7 +498,8 @@ class FrontController extends Controller
 			// jika sudah mengisi keluhan tetapi belum mengisi jadwal
 
 			// get data master psikolog
-			$psikolog = Psikolog::get();
+			$psikolog = Psikolog::where('status', 1)
+				->get();
 
 			return view('front.konseling_jadwal', [
 				'masyarakat' => $masyarakat,
@@ -577,11 +571,21 @@ class FrontController extends Controller
 	 */
 	public function jadwalPsikolog($id)
 	{
-		// cek apakah sudah verifikasi otp
-		$jadwal = jadwal::where('psikolog_id', $id)
-			->get();
+		// get jadwal
+		// $jadwal = jadwal::where('psikolog_id', $id)
+		// 	->get();
 
-		return response()->json($jadwal);
+		$eventResult = array(
+			array("title" => "Weekend Party - at Hue residency", "date"=>"2025-05-08"),
+			array("title" => "Anniversary Celebration - at Meridian Hall", "date"=>"2025-05-11"),
+			array("title" => "Yearly Get Together - at College Campus", "date"=>"2025-05-20"),
+			array("title" => "Food Festival", "date"=>"2025-05-31")
+		);
+
+		// echo json_encode($eventResult);
+		// return response()->json($jadwal);
+		return response()->json($eventResult);
+		
 	}
 
 	/**
@@ -598,6 +602,7 @@ class FrontController extends Controller
 			'jadwal_id'   => 'required',
 			'mas_id'   => 'required',
 			'jadwal_tgl'   => 'required',
+			'jadwal_jam'   => 'required',
 			'jadwal_alt_tgl'   => 'required',
 			'jadwal_alt_jam'   => 'required'
 		]);
@@ -608,6 +613,7 @@ class FrontController extends Controller
 			'psikolog_id'   	=> $request->psikolog_id,
 			'jadwal_id'     	=> $request->jadwal_id,
 			'jadwal_tgl'     	=> $request->jadwal_tgl,
+			'jadwal_jam'     	=> $request->jadwal_jam,
 			'jadwal_alt_tgl'   	=> $request->jadwal_alt_tgl,
 			'jadwal_alt_jam'   	=> $request->jadwal_alt_jam
 		]);

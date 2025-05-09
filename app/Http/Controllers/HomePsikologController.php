@@ -223,6 +223,7 @@ class HomePsikologController extends Controller
 				'psikologs.nama as psikolog_nama',
 				'psikologs.sipp',
 				'psikologs.id as psikolog_id', 
+				'psikologs.ttd',
 				'dasshasils.*',
 				'jadwals.hari',
 				'jadwals.jam as jamnya',

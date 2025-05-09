@@ -12,7 +12,7 @@ use Flash;
 
 use App\Models\Psikolog;
 use App\Models\User;
-use App\Models\Keluhan;
+use App\Models\keluhan;
 use Illuminate\Support\Facades\Storage;
 use Yajra\Datatables\Datatables;
 
@@ -85,6 +85,24 @@ class PsikologController extends AppBaseController
 			}
 
 			$input['foto'] = $month_folder.'/'.$file_name;
+		}
+
+		//upload image
+		if($request->file('ttd')) {
+			$file = $request->file('ttd');
+			$file_name = time().'_'.$file->getClientOriginalName();
+
+			$year_folder = date("Y");
+			$month_folder = $year_folder . '/' . date("m");
+
+			$path = 'uploads/psikolog/'.$month_folder.'/'.$file_name;
+
+			$file_content = file_get_contents($file);
+			if(!Storage::disk('public')->put($path, $file_content)) {
+				return false;
+			}
+
+			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
 		$psikolog = $this->psikologRepository->create($input);
@@ -194,6 +212,30 @@ class PsikologController extends AppBaseController
 			$input['foto'] = $month_folder.'/'.$file_name;
 		}
 
+		//upload ttd
+		if($request->file('ttd')) {
+			// hapus file lama
+			$old_file = Psikolog::where('id', $id)->first();
+			if($old_file->ttd) {
+				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->ttd));
+			}
+
+			$file = $request->file('ttd');
+			$file_name = time().'_'.$file->getClientOriginalName();
+
+			$year_folder = date("Y");
+			$month_folder = $year_folder . '/' . date("m");
+
+			$path = 'uploads/psikolog/'.$month_folder.'/'.$file_name;
+
+			$file_content = file_get_contents($file);
+			if(!Storage::disk('public')->put($path, $file_content)) {
+				return false;
+			}
+
+			$input['ttd'] = $month_folder.'/'.$file_name;
+		}
+
 		$psikolog = $this->psikologRepository->update($input, $id);
 
 		Flash::success('Psikolog updated successfully.');
@@ -268,7 +310,20 @@ class PsikologController extends AppBaseController
             return "<a href='tel:62$sql->hp'>0".$sql->hp."</a>";
         })
 		->editColumn('kec_id', function($sql){
-            return $this->kec($sql->kec_id);
+            switch($sql->kec_id) {
+				case '5171010':
+					return "Denpasar Selatan";
+					break;
+				case '5171020':
+					return "Denpasar Timur";
+					break;
+				case '5171030':
+					return "Denpasar Barat";
+					break;
+				case '5171031':
+					return "Denpasar Utara";
+					break;
+			}
         })
         ->editColumn('status', function($sql){
             if($sql->status==0) {
