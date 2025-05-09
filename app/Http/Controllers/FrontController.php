@@ -571,11 +571,21 @@ class FrontController extends Controller
 	 */
 	public function jadwalPsikolog($id)
 	{
-		// cek apakah sudah verifikasi otp
-		$jadwal = jadwal::where('psikolog_id', $id)
-			->get();
+		// get jadwal
+		// $jadwal = jadwal::where('psikolog_id', $id)
+		// 	->get();
 
-		return response()->json($jadwal);
+		$eventResult = array(
+			array("title" => "Weekend Party - at Hue residency", "date"=>"2025-05-08"),
+			array("title" => "Anniversary Celebration - at Meridian Hall", "date"=>"2025-05-11"),
+			array("title" => "Yearly Get Together - at College Campus", "date"=>"2025-05-20"),
+			array("title" => "Food Festival", "date"=>"2025-05-31")
+		);
+
+		// echo json_encode($eventResult);
+		// return response()->json($jadwal);
+		return response()->json($eventResult);
+		
 	}
 
 	/**
@@ -592,6 +602,7 @@ class FrontController extends Controller
 			'jadwal_id'   => 'required',
 			'mas_id'   => 'required',
 			'jadwal_tgl'   => 'required',
+			'jadwal_jam'   => 'required',
 			'jadwal_alt_tgl'   => 'required',
 			'jadwal_alt_jam'   => 'required'
 		]);
@@ -602,6 +613,7 @@ class FrontController extends Controller
 			'psikolog_id'   	=> $request->psikolog_id,
 			'jadwal_id'     	=> $request->jadwal_id,
 			'jadwal_tgl'     	=> $request->jadwal_tgl,
+			'jadwal_jam'     	=> $request->jadwal_jam,
 			'jadwal_alt_tgl'   	=> $request->jadwal_alt_tgl,
 			'jadwal_alt_jam'   	=> $request->jadwal_alt_jam
 		]);

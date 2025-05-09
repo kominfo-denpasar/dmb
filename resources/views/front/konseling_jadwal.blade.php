@@ -1,6 +1,37 @@
 @extends('front.layouts.app')
 
 @section('content')
+<style>
+	#calendar {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+	.fc-daygrid-event {
+		background-color: #4a90e2;
+		color: white;
+		border-radius: 5px;
+		padding: 5px;
+		text-align: center;
+	}
+	.fc-daygrid-event:hover {
+		background-color: #357ABD;
+	}
+	.fc-daygrid-event:active {
+		background-color: #2A6496;
+	}
+	.fc-daygrid-event.fc-daygrid-event-start {
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+	}
+	.fc-daygrid-event.fc-daygrid-event-end {
+		border-top-right-radius: 5px;
+		border-bottom-right-radius: 5px;
+	}
+	.fc-daygrid-event.fc-daygrid-event-start.fc-daygrid-event-end {
+		border-radius: 5px;
+	}
+</style>
+
 
 <section class="section main-section">
 
@@ -33,7 +64,6 @@
 						Silahkan untuk memilih jadwal dan psikolog yang Anda inginkan. Pastikan jadwal yang Anda pilih sudah sesuai dengan jadwal yang tersedia.
 					</p>
 				</div>
-				
 			</div>
 
 			<form action="{{route('front.konseling-jadwal-store')}}" method="POST" class="space-y-2">
@@ -63,23 +93,26 @@
 						<label class="label">Tanggal Konseling</label>
 						<div class="field-body">
 							<div class="field">
+								<div class="container">
+									<div id="calendar"></div>
+								</div>
+							</div>
+							<!-- <div class="field">
 								<div class="control">
 									<input type="date" autocomplete="off" name="jadwal_tgl" class="input" required="">
 								</div>
 								<p class="help">Pilih tanggal kapan Anda ingin melakukan konseling</p>
-							</div>
+							</div> -->
 						</div>
 					</div>
 					<!-- .field -->
-					<label class="label">Hari & Jam Konseling</label>
+					<label class="label">Jam Konseling</label>
 					<div class="field-body">
 						<div class="field">
 							<div class="control">
-								<select name="jadwal_id" id="jadwal_id" class="w-full p-2 input" required="">
-									<option value="">Pilih</option>
-								</select>
+								<input type="time" id="jadwal_jam" class="w-full p-2 input" required="">
 							</div>
-							<p class="help">Pilih psikolog dahulu sebelum memilih hari & jam konseling</p>
+							<p class="help">Pilih psikolog dahulu sebelum memilih jam konseling</p>
 						</div>
 					</div>
 					
@@ -142,35 +175,70 @@
 
 @push('script')
 
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+<script src="//phppot.com/demo/events-display-using-php-ajax-with-clndr-calendar-plugin/clndr.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script type="text/javascript">
-	document.querySelector('#psikolog_id').addEventListener('change', function() {
-		const opsi = document.querySelector('#psikolog_id').value;
-
-		const url = `{{route('front.jadwal-psikolog', ':id')}}`.replace(':id', opsi);
-
-		fetch(url)
-			.then((response) => {
-				if (!response.ok) {
-					throw new Error('Network response was not ok.');
+	const opsi = document.querySelector('#psikolog_id').value;
+	document.addEventListener('DOMContentLoaded', function() {
+		var calendarEl = document.getElementById('calendar');
+		var calendar = new FullCalendar.Calendar(calendarEl, {
+			locale: 'id',
+			initialView: 'dayGridMonth',
+			events: [
+				{
+					title  : 'Available',
+					start  : '2025-05-05'
+				},
+				{
+					title  : 'Available',
+					start  : '2025-05-10'
 				}
-				return response.json();
-			})
-			.then((data) => {
-				// console.log(data);
-				const containerDisplay = document.getElementById('jadwal_id');
-				containerDisplay.innerHTML = "<option value=''>Pilih</option>";
-				data.forEach(result => {
-					const data = `
-						<option value="${result.id}">Hari ${result.hari}, jam ${result.jam} WITA</option>
-					`
-					containerDisplay.insertAdjacentHTML('afterbegin', data)
-				});
-			})
-			.catch((error) => {
-				return error;
-			});
+			],
+			dateClick: function(info) {
+				alert('clicked ' + info.dateStr);
+			},
+			select: function(info) {
+				alert('selected ' + info.startStr + ' to ' + info.endStr);
+			}
+		});
+		calendar.render();
 	});
 
 </script>
+
+<script type="text/javascript">
+	// document.querySelector('#psikolog_id').addEventListener('change', function() {
+	// 	const opsi = document.querySelector('#psikolog_id').value;
+
+	// 	const url = `{{route('front.jadwal-psikolog', ':id')}}`.replace(':id', opsi);
+
+	// 	fetch(url)
+	// 		.then((response) => {
+	// 			if (!response.ok) {
+	// 				throw new Error('Network response was not ok.');
+	// 			}
+	// 			return response.json();
+	// 		})
+	// 		.then((data) => {
+	// 			// console.log(data);
+	// 			const containerDisplay = document.getElementById('jadwal_id');
+	// 			containerDisplay.innerHTML = "<option value=''>Pilih</option>";
+	// 			data.forEach(result => {
+	// 				const data = `
+	// 					<option value="${result.id}">Hari ${result.hari}, jam ${result.jam} WITA</option>
+	// 				`
+	// 				containerDisplay.insertAdjacentHTML('afterbegin', data)
+	// 			});
+	// 		})
+	// 		.catch((error) => {
+	// 			return error;
+	// 		});
+	// });
+</script>
+
 
 @endpush
