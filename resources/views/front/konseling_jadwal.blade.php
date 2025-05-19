@@ -182,32 +182,37 @@
 
 <script src='//cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script type="text/javascript">
-	const opsi = document.querySelector('#psikolog_id').value;
-	document.addEventListener('DOMContentLoaded', function() {
-		var calendarEl = document.getElementById('calendar');
-		var calendar = new FullCalendar.Calendar(calendarEl, {
-			locale: 'id',
-			initialView: 'dayGridMonth',
-			events: [
-				{
-					title  : 'Available',
-					start  : '2025-05-05'
-				},
-				{
-					title  : 'Available',
-					start  : '2025-05-10'
-				}
-			],
-			dateClick: function(info) {
-				alert('clicked ' + info.dateStr);
-			},
-			select: function(info) {
-				alert('selected ' + info.startStr + ' to ' + info.endStr);
-			}
-		});
-		calendar.render();
-	});
+	document.querySelector('#psikolog_id').addEventListener('change', function() {
+		const opsi = document.querySelector('#psikolog_id').value;
 
+		const url = `{{route('front.jadwal-psikolog', ':id')}}`.replace(':id', opsi);
+		console.log(url);
+
+		// document.addEventListener('DOMContentLoaded', function() {
+			var calendarEl = document.getElementById('calendar');
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+				locale: 'id',
+				initialView: 'dayGridMonth',
+				events: [
+					{
+						title  : 'Ada',
+						start  : '2025-05-05'
+					},
+					{
+						title  : 'Ada',
+						start  : '2025-05-10'
+					}
+				],
+				dateClick: function(info) {
+					alert('clicked ' + info.dateStr);
+				},
+				select: function(info) {
+					alert('selected ' + info.startStr + ' to ' + info.endStr);
+				}
+			});
+			calendar.render();
+		// });
+	});
 </script>
 
 <script type="text/javascript">
