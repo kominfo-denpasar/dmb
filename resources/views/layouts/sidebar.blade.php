@@ -1,8 +1,8 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-    <a href="{{ route('home') }}" class="brand-link">
+    <a href="{{ route('home') }}" class="brand-link" style="background: #fff;">
         <img src="{{ asset('img/logo_dmb.png') }}"
              alt="AdminLTE Logo"
-             class="elevation-3 img-circle" style="width: 100%;">
+             class="" style="width: 100%;">
     </a>
 
     <div class="sidebar">
