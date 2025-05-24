@@ -23,7 +23,7 @@
 <div class="form-group col-sm-6">
     {!! Form::label('jam', 'Jam') !!}
     {!! Form::text('jam', null, ['class' => 'form-control', 'required', 'placeholder' => 'xx:xx - xx:xx']) !!}
-    <small>Inputkan rentang jam praktek Anda dalam format waktu 24 jam. (Misal: 10:00 - 13:00)</small>
+    <small>Inputkan rentang jam praktek Anda dalam format waktu 24 jam. (Misal: 10:00 - 13:00). Jam Praktek yang lebih dari satu dapat dipisahkan dengan tanda koma.</small>
 </div>
 
 <!-- Kuota Field -->

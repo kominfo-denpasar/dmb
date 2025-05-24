@@ -16,11 +16,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+use App\Traits\dateTransform;
 
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class FrontController extends Controller
 {
+
+	use dateTransform;
+
 	/**
 	 * Create a new controller instance.
 	 *
@@ -575,12 +579,32 @@ class FrontController extends Controller
 		// $jadwal = jadwal::where('psikolog_id', $id)
 		// 	->get();
 
-		$eventResult = array(
-			array("title" => "Weekend Party - at Hue residency", "date"=>"2025-05-08"),
-			array("title" => "Anniversary Celebration - at Meridian Hall", "date"=>"2025-05-11"),
-			array("title" => "Yearly Get Together - at College Campus", "date"=>"2025-05-20"),
-			array("title" => "Food Festival", "date"=>"2025-05-31")
-		);
+		// cek apakah jadwal belum terisi oleh masyarakat lain
+		$jadwal = jadwal::where('psikolog_id', $id)
+			->whereDoesntHave('keluhan', function($query) {
+				$query->where('status', 1);
+			})
+			->get();
+
+
+		dd($jadwal);
+
+		$eventResult = [];
+		foreach($jadwal as $key => $value) {
+			$date = $this->getUpcomingDatesByDayName($value->hari);
+			foreach($date as $k => $v) {
+				$eventResult[] = array(
+					"date" => $v,
+					"times" => explode(',', $value->jam)
+				);
+			}
+		}
+
+		// $eventResult = array(
+		// 	array("date" => "2025-05-28", "times" => ["09:00", "10:00", "13:00"]),
+		// 	array("date" => "2025-05-01", "times" => ["08:00", "11:00"]),
+		// 	array("date" => "2025-05-03", "times" => ["10:00", "14:00"]),
+		// );
 
 		// echo json_encode($eventResult);
 		// return response()->json($jadwal);
@@ -596,26 +620,25 @@ class FrontController extends Controller
 	 */
 	public function konselingJadwalStore(Request $request)
 	{
+		// dd($request);
 		//validate form
 		$this->validate($request, [
 			'psikolog_id'   => 'required',
-			'jadwal_id'   => 'required',
+			// 'jadwal_id'   => 'required',
 			'mas_id'   => 'required',
-			'jadwal_tgl'   => 'required',
-			'jadwal_jam'   => 'required',
-			'jadwal_alt_tgl'   => 'required',
-			'jadwal_alt_jam'   => 'required'
+			'utama'   => 'required',
+			'alternatif'   => 'required'
 		]);
 
 		// updata data keluhan
-		$keluhan = keluhan::where(['mas_id' => $request->mas_id])
+		$keluhan = keluhan::where(['mas_id' => $request->mas_id, 'status' => 0])
 		->update([
 			'psikolog_id'   	=> $request->psikolog_id,
-			'jadwal_id'     	=> $request->jadwal_id,
-			'jadwal_tgl'     	=> $request->jadwal_tgl,
-			'jadwal_jam'     	=> $request->jadwal_jam,
-			'jadwal_alt_tgl'   	=> $request->jadwal_alt_tgl,
-			'jadwal_alt_jam'   	=> $request->jadwal_alt_jam
+			// 'jadwal_id'     	=> $request->jadwal_id,
+			'jadwal_tgl'     	=> $request->utama['tanggal'],
+			'jadwal_jam'     	=> $request->utama['jam'],
+			'jadwal_alt_tgl'   	=> $request->alternatif['tanggal'],
+			'jadwal_alt_jam'   	=> $request->alternatif['jam']
 		]);
 
 		//redirect to konseling final
@@ -868,10 +891,7 @@ class FrontController extends Controller
 		} else {
 			return view('front.404');
 		}
-		
-        
-
-		
+	
 	}
 
 	/**
