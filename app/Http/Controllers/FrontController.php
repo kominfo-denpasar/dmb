@@ -710,27 +710,26 @@ class FrontController extends Controller
 	{
 		//ambil data join masyarakat, keluhan dan jadwal
 		$masyarakat = Masyarakat::join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->join('psikologs', 'keluhans.psikolog_id', '=', 'psikologs.id')
 			->select(
+				'masyarakats.token', 
 				'masyarakats.nik', 
 				'masyarakats.nama', 
 				'masyarakats.hp', 
 				'keluhans.keluhan', 
-				'jadwals.hari', 
-				'jadwals.jam', 
+				'keluhans.jadwal_tgl', 
+				'keluhans.status', 
+				'keluhans.jadwal_jam', 
 				'psikologs.id as psikolog_id',
 				'psikologs.nama as psikolog',
 				'psikologs.alamat_praktek',
-				'psikologs.hp as psikolog_hp')
-			->where([
-				'masyarakats.token' => $id,
-				'keluhans.status' => 0
-			])
-			->orWhere([
-				'masyarakats.token' => $id,
-				'keluhans.status' => 1
-			])
+				'psikologs.hp as psikolog_hp'
+			)
+			->where('masyarakats.token', $id)
+			->where(function($query) {
+				$query->where('keluhans.status', 0)
+					->orWhere('keluhans.status', 1);
+			})
 			->first();
 		
 		// dd($masyarakat);
@@ -758,13 +757,13 @@ class FrontController extends Controller
 			$alamat_web = url()->to('/').'/login';
 			$data =[
 				'phone' => '0'.$masyarakat->psikolog_hp,
-				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
 			$data = [
 				'phone' => '0'.$masyarakat->hp,
-				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 		}
