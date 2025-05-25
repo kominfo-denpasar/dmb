@@ -140,9 +140,7 @@
 						</summary>
 
 						<article class="px-4 pb-4">
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ipsum sapien. Vestibulum molestie
-								porttitor augue vitae vulputate. Aliquam nec ex maximus, suscipit diam vel, tristique tellus. </p>
+							<p>{!!$selanjutnya->value!!}</p>
 						</article>
 					</details>
 				</li>
@@ -160,8 +158,7 @@
 
 						<article class="px-4 pb-4">
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ipsum sapien. Vestibulum molestie
-								porttitor augue vitae vulputate. Aliquam nec ex maximus, suscipit diam vel, tristique tellus. </p>
+								{!!$jika_lewat->value!!} </p>
 						</article>
 					</details>
 				</li>

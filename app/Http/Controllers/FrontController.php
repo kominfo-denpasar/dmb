@@ -770,10 +770,23 @@ class FrontController extends Controller
 
 		// cek apakah sudah mengisi semua form konseling
 		if(Session::get('jadwal') && $masyarakat) {
+			//get data konten dari tabel pengaturan
+			$selanjutnya = DB::table('pengaturans')
+				->select('value')
+				->where('slug', 'selanjutnya')
+				->first();
+
+			$jika_lewat = DB::table('pengaturans')
+				->select('value')
+				->where('slug', 'jika-lewat')
+				->first();
+
 			return view('front.konseling_final', [
 				'mas_id' => $id, 
-				'masyarakat' => $masyarakat]
-			);
+				'masyarakat' => $masyarakat,
+				'selanjutnya' => $selanjutnya,
+				'jika_lewat' => $jika_lewat
+				]);
 		} else {
 			return redirect()->route('front.survei-intro');
 		}
