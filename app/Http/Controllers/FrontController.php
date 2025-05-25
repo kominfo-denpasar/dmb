@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
 use App\Traits\dateTransform;
 
+use Carbon\Carbon;
+
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class FrontController extends Controller
@@ -576,19 +578,10 @@ class FrontController extends Controller
 	public function jadwalPsikolog($id)
 	{
 		// get jadwal
-		// $jadwal = jadwal::where('psikolog_id', $id)
-		// 	->get();
-
-		// cek apakah jadwal belum terisi oleh masyarakat lain
 		$jadwal = jadwal::where('psikolog_id', $id)
-			->whereDoesntHave('keluhan', function($query) {
-				$query->where('status', 1);
-			})
 			->get();
 
-
-		dd($jadwal);
-
+		// cek apakah jadwal belum terisi oleh masyarakat lain
 		$eventResult = [];
 		foreach($jadwal as $key => $value) {
 			$date = $this->getUpcomingDatesByDayName($value->hari);
@@ -600,6 +593,67 @@ class FrontController extends Controller
 			}
 		}
 
+		// 1. Ambil semua jadwal yang sudah dipakai
+		$existing = Keluhan::where('status', 0)
+			->where('psikolog_id', $id)
+			->get([
+				'jadwal_tgl', 'jadwal_jam',
+				'jadwal_alt_tgl', 'jadwal_alt_jam',
+				'jadwal_alt2_tgl', 'jadwal_alt2_jam',
+			]);
+
+		// 2. Buat key lookup seperti "2025-05-28|09:00"
+		$used = [];
+
+		foreach ($existing as $item) {
+			$kombinasi = [
+				[$item->jadwal_tgl, $item->jadwal_jam],
+				[$item->jadwal_alt_tgl, $item->jadwal_alt_jam],
+				[$item->jadwal_alt2_tgl, $item->jadwal_alt2_jam],
+			];
+
+			foreach ($kombinasi as [$tgl, $jam]) {
+				if ($tgl && $jam) {
+					$tglStr = Carbon::parse($tgl)->format('Y-m-d');
+					$key = $tglStr . '|' . trim($jam);
+					$used[$key] = true;
+				}
+			}
+		}
+
+		// 3. Cek eventResult
+		$filtered = [];
+
+		foreach ($eventResult as $event) {
+			$tanggal = Carbon::parse($event['date'])->format('Y-m-d');
+			foreach ($event['times'] as $jam) {
+				$jam = trim($jam);
+				$key = $tanggal . '|' . $jam;
+				if (!isset($used[$key])) {
+					$filtered[] = [
+						'date' => $tanggal,
+						'time' => $jam,
+					];
+				}
+			}
+		}
+		// dd($filtered);
+
+		// Kelompokkan berdasarkan tanggal
+		$grouped = collect($filtered)
+			->groupBy('date')
+			->map(function ($items, $date) {
+				return [
+					'date' => $date,
+					'times' => $items->pluck('time')->values()->all()
+				];
+			})
+			->values()
+			->all();
+
+		// dd($grouped);
+		
+
 		// $eventResult = array(
 		// 	array("date" => "2025-05-28", "times" => ["09:00", "10:00", "13:00"]),
 		// 	array("date" => "2025-05-01", "times" => ["08:00", "11:00"]),
@@ -607,8 +661,7 @@ class FrontController extends Controller
 		// );
 
 		// echo json_encode($eventResult);
-		// return response()->json($jadwal);
-		return response()->json($eventResult);
+		return response()->json($grouped);
 		
 	}
 
