@@ -37,7 +37,7 @@
 						<div class="col-12">
 						<h4>
 							<i class="fas fa-globe"></i> Psychological Record.
-							<small class="float-right">Tanggal: {{ \Carbon\Carbon::parse($data->tanggalnya)->format('d/m/Y')}}</small>
+							<small class="float-right">Tanggal Konsul: {{ \Carbon\Carbon::parse($data->tanggalnya)->format('d/m/Y')}}</small>
 						</h4>
 						</div>
 						<!-- /.col -->
@@ -52,7 +52,7 @@
 							Tanggal Lahir/Usia<br>
 							Pendidikan Terakhir<br>
 							Pekerjaan<br>
-							Kecamatan<br></strong>	
+							Alamat<br></strong>	
 						</address>
 						</div>
 						<!-- /.col -->
@@ -224,7 +224,14 @@
 								<tbody>
 									<tr>
 										<td>
-											<img class="img-fluid" src="{{ asset('uploads/berkas_pendukung/'.$konseling->berkas_pendukung)}}" alt="Dokumentasi">
+											@if($konseling && $konseling->berkas_pendukung)
+												<!-- cek apakah file ada di folder -->
+												@if(file_exists(storage_path('app/public/uploads/berkas_pendukung/'.$konseling->berkas_pendukung)))
+													<img class="img-fluid col-6" src="{{asset('storage/uploads/berkas_pendukung/'.$konseling->berkas_pendukung)}}" style="height:20%">
+												@else
+													<img class="img-fluid col-6" src="{{asset('img/pp_user.jpg')}}" style="height:20%">
+												@endif
+											@endif
 										</td>
 									</tr>
 								</tbody>
