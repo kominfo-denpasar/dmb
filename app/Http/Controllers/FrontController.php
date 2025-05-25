@@ -740,7 +740,7 @@ class FrontController extends Controller
 				'status' => 0
 			])->first();
 
-		if ($cek) {
+		if (!$cek) {
 			// jika belum ada data konseling
 			//create data konseling
 			Konseling::create([
