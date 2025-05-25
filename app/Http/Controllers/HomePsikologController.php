@@ -89,7 +89,6 @@ class HomePsikologController extends Controller
 			->join('konselings', 'masyarakats.token', '=', 'konselings.mas_id')
 			->join('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
 			->join('dasshasils', 'masyarakats.token', '=', 'dasshasils.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->select(
 				'masyarakats.nama',
 				'masyarakats.nik',
@@ -101,12 +100,11 @@ class HomePsikologController extends Controller
 				'masyarakats.token', 
 				'keluhans.*',
 				'keluhans.id as keluhan_id', 
+				'keluhans.jadwal_jam as jamnya',
 				'konselings.id as konseling_id',
 				'psikologs.nama as psikolog_nama',
 				'psikologs.id as psikolog_id', 
-				'dasshasils.*',
-				'jadwals.hari',
-				'jadwals.jam as jamnya',
+				'dasshasils.*'
 			)
 			->first();
 		
