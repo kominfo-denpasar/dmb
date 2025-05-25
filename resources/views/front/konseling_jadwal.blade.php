@@ -69,6 +69,26 @@
 				</div>
 				<!-- .field -->
 
+				<div class="field">
+					<div class="field">
+						<!-- <label class="label">Tanggal Konseling</label> -->
+						<div class="field-body">
+							<div class="field">
+								<div id="calendar-container" class="w-full h-[600px] p-4">
+									<div id="calendar"></div>
+								</div>
+							</div>
+							<!-- <div class="field">
+								<div class="control">
+									<input type="date" autocomplete="off" name="jadwal_tgl" class="input" required="">
+								</div>
+								<p class="help">Pilih tanggal kapan Anda ingin melakukan konseling</p>
+							</div> -->
+						</div>
+					</div>
+				</div>
+				<!-- .field -->
+
 				<div id="dateUtamaDiv" class="hidden border rounded-md p-4 w-full mx-auto max-w-2xl">
 					<label class="label">Jadwal Utama</label>
 					<div class="field-body">
@@ -109,26 +129,6 @@
 					</div>
 				</div>
 				<!-- .field -->
-
-				<div class="field">
-					<div class="field">
-						<!-- <label class="label">Tanggal Konseling</label> -->
-						<div class="field-body">
-							<div class="field">
-								<div id="calendar-container" class="w-full h-[600px] p-4">
-									<div id="calendar"></div>
-								</div>
-							</div>
-							<!-- <div class="field">
-								<div class="control">
-									<input type="date" autocomplete="off" name="jadwal_tgl" class="input" required="">
-								</div>
-								<p class="help">Pilih tanggal kapan Anda ingin melakukan konseling</p>
-							</div> -->
-						</div>
-					</div>
-				</div>
-				<!-- .field -->
 				
 			</form>
 		</article>
@@ -145,8 +145,8 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
 
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<!-- <script src="//phppot.com/demo/events-display-using-php-ajax-with-clndr-calendar-plugin/clndr.js"></script> -->
 
+<!-- <script src="//phppot.com/demo/events-display-using-php-ajax-with-clndr-calendar-plugin/clndr.js"></script> -->
 <script src='//cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
 <script type="text/javascript">
 	const calendarEl = document.getElementById('calendar');
@@ -175,11 +175,38 @@
 			})
 			.then((data) => {
 				const calendar = new FullCalendar.Calendar(calendarEl, {
-					initialView: window.innerWidth < 768 ? 'dayGridWeek' : 'dayGridMonth',
+					initialView: 'dayGridMonth',
 					locale: 'id',
 					selectable: true,
+					height: 'auto',
+					headerToolbar: {
+						left: 'prev,next today',
+						center: 'title',
+						right: '',
+					},
 					dateClick: function(info) {
 						const date = info.dateStr;
+
+						// Hapus highlight sebelumnya (jika ada)
+						calendar.getEvents().forEach(event => {
+							if (event.extendedProps.clickedHighlight) {
+							event.remove();
+							}
+						});
+
+						// Tambahkan background merah untuk tanggal yang diklik
+						calendar.addEvent({
+						start: date,
+						display: 'background',
+						backgroundColor: 'red',
+						extendedProps: {
+							clickedHighlight: true
+						}
+						});
+
+						clickedDate = date;
+
+
 						const match = data.find(d => d.date === date);
 						if (match) {
 							$('#selectedDate').val(date);
@@ -205,11 +232,12 @@
 						}
 					},
 					events: data.map(d => ({
-						title: 'Tersedia',
+						// title: 'Tersedia',
 						start: d.date,
 						display: 'background',
 						backgroundColor: 'rgb(146 188 255)',
 					}))
+
 				});
 				calendar.render();
 

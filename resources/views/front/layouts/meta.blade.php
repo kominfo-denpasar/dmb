@@ -5,7 +5,7 @@
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 
 <!-- Tailwind is included -->
-<link rel="stylesheet" href="{{ asset('css/main.css?v=1652870200386') }}">
+<link rel="stylesheet" href="{{ asset('css/mainv2.css') }}">
 @vite('resources/css/app.css')
 
 <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
