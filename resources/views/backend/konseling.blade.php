@@ -158,8 +158,8 @@
 												<table class="table table-bordered">
 													<tbody>
 														<tr>
-															<td style="width:20%" class="text-right">Hari</td>
-															<td><b>{{$data->hari}}</b> ({{ \Carbon\Carbon::parse($data->jadwal_tgl)->format('d/m/Y')}})</td>
+															<td style="width:20%" class="text-right">Tanggal</td>
+															<td><b>{{ \Carbon\Carbon::parse($data->hari)->format('d/m/Y')}}</b></td>
 														</tr>
 														<tr>
 															<td class="text-right">Jam</td>
