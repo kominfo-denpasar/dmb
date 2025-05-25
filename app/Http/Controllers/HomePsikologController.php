@@ -202,7 +202,6 @@ class HomePsikologController extends Controller
 			->join('konselings', 'masyarakats.token', '=', 'konselings.mas_id')
 			->join('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
 			->join('dasshasils', 'masyarakats.token', '=', 'dasshasils.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->select(
 				'masyarakats.nama',
 				'masyarakats.nik',
@@ -216,16 +215,19 @@ class HomePsikologController extends Controller
 				'masyarakats.token',
 				'keluhans.id as keluhan_id',
 				'keluhans.keluhan', 
+				'keluhans.jadwal_jam as jamnya',
 				'keluhans.jadwal_alt2_tgl as tanggalnya', 
 				'konselings.id as konseling_id',
 				'psikologs.nama as psikolog_nama',
 				'psikologs.sipp',
 				'psikologs.id as psikolog_id', 
 				'psikologs.ttd',
-				'dasshasils.*',
-				'jadwals.hari',
-				'jadwals.jam as jamnya',
+				'dasshasils.*'
 			)
+			->where([
+				'keluhans.status' => 2, // hanya ambil data keluhan yang sudah selesai
+				'konselings.status' => 2 // hanya ambil data konseling yang sudah selesai
+			])
 			->first();
 		
 		// dd($data);
@@ -479,8 +481,9 @@ class HomePsikologController extends Controller
 			$month_folder = $year_folder . '/' . date("m");
 
 			$old_berkas_pendukung = Konseling::where('id', $request->konseling_id)->first();
-			if($old_berkas_pendukung->berkas_pendukung) {
-				unlink(storage_path('app/public/uploads/berkas_pendukung/'.$old_berkas_pendukung->berkas_pendukung));
+			$filePath = storage_path('app/public/uploads/berkas_pendukung/'.$old_berkas_pendukung->berkas_pendukung);
+			if(file_exists($filePath) && $old_berkas_pendukung->berkas_pendukung) {
+				unlink($filePath);
 			}
 			
 			// simpan file berkas pendukung menggunakan storage
