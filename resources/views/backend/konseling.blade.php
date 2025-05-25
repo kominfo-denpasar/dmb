@@ -125,8 +125,8 @@
 									<li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Informasi</a></li>
 									<li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Keluhan & DASS-21</a></li>
 									@role('psikolog', true)
-									<li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Input Data Konseling</a></li>
 									<li class="nav-item"><a class="nav-link" href="#evaluasi" data-toggle="tab">Evaluasi</a></li>
+									<li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Input Data Konseling</a></li>
 									@endrole
 								</ul>
 							</div><!-- /.card-header -->
@@ -480,197 +480,195 @@
 									<!-- /.tab-pane -->
 
 									@if($data->status!=3)
+										<div class="tab-pane" id="evaluasi">
+											<div class="col-11">
+												<div class="callout callout-info">
+													<h5>Perhatian!</h5>
+													<p>
+														Formulir ini ditujukan untuk klien yang telah selesai melakukan konseling. Untuk mengirim form ke klien klik tombol di bawah. Klien akan mendapatkan formulir evaluasi melalui email & Whatsapp.
 
-									<div class="tab-pane" id="settings">
-										<div class="callout callout-danger">
-											<h5>Perhatian!</h5>
-											<p>
-											@if($data->status==0) 
-												Mohon untuk mengkonfirmasi konseling pada tab 'informasi' terlebih dahulu sebelum menginputkan hasil konseling. 
-											@elseif($data->status==2)
-												Anda sudah menginputkan data konseling sebelumnya. Jika ingin mengubah data, silahkan inputkan kembali data yang baru.
-											@else
-												Anda sedang dalam proses konseling. Mohon untuk menginputkan data konseling setelah selesai melakukan assessment.
-											@endif
-											</p>
-										</div>
-										<!-- .callout -->
-
-										<div class="card card-primary">
-											<div class="card-header">
-												<h3 class="card-title">Form Input Data Konseling</h3>
-											</div>
-											<!-- /.card-header -->
-											<div class="card-body">
-												@if($data->status!=2)
-												<form enctype="multipart/form-data" action="{{route('backend.storeHasil')}}" method="POST" class="form-horizontal">
-												@else
-												<form enctype="multipart/form-data" action="{{route('backend.updateHasil', $data->konseling_id)}}" method="POST" class="form-horizontal">
+														@if($evaluasi!=null)
+														<br><b>Catatan: Form evaluasi sudah diinputkan oleh klien.</b>
+														@endif
+													</p>
+												</div>
+												<!-- .callout -->
+												@if($evaluasi!=null)
+												<hr>
+												<div class="form-group">
+													<label>Seberapa membantu layanan konseling yang diberikan?
+													</label>
+													<select class="form-control" disabled>
+														<option>-</option>
+														<option @if($evaluasi->nilai_layanan==4) {{"selected"}} @endif>Sangat Membantu</option>
+														<option @if($evaluasi->nilai_layanan==3) {{"selected"}} @endif>Membantu</option>
+														<option @if($evaluasi->nilai_layanan==2) {{"selected"}} @endif>Cukup Membantu</option>
+														<option @if($evaluasi->nilai_layanan==1) {{"selected"}} @endif>Kurang Membantu</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label>Setelah konseling, seberapa mengganggu keluhan yang Anda rasakan pada aktivitas sehari-hari?
+													</label>
+													<select class="form-control" disabled>
+														<option>-</option>
+														<option @if($evaluasi->nilai_keluhan==4) {{"selected"}} @endif>Sangat Membantu</option>
+														<option @if($evaluasi->nilai_keluhan==3) {{"selected"}} @endif>Membantu</option>
+														<option @if($evaluasi->nilai_keluhan==2) {{"selected"}} @endif>Cukup Membantu</option>
+														<option @if($evaluasi->nilai_keluhan==1) {{"selected"}} @endif>Kurang Membantu</option>
+													</select>
+												</div>
+												<div class="form-group">
+													<label>Apakah anda bersedia merekomendasikan layanan konseling ini ke rekan/keluarga yang membutuhkan?
+													</label>
+													<select class="form-control" disabled>
+														<option>-</option>
+														<option @if($evaluasi->rekomendasi==1) {{"selected"}} @endif>Bersedia</option>
+														<option @if($evaluasi->rekomendasi==0) {{"selected"}} @endif>Tidak Bersedia</option>
+													</select>
+												</div>
 												@endif
-													@csrf
-													<input type="hidden" name="mas_id" value="{{$data->token}}">
-													<input type="hidden" name="keluhan_id" value="{{$data->keluhan_id}}">
-													<input type="hidden" name="konseling_id" value="{{$data->konseling_id}}">
-
-
-													<div class="form-group row">
-														<label for="inputExperience" class="col-sm-2 col-form-label">Hasil Assessment</label>
-														<div class="col-sm-10">
-															<textarea class="form-control" name="hasil" id="hasil" placeholder="hasil" @if($data->status==0)disabled @endif>{!!$konseling['hasil']!!}</textarea>
-															<small>Inputkan data berdasarkan field yang diminta</small>
-														</div>
-													</div>
-
-													<div class="form-group row">
-														<label for="masalah" class="col-sm-2 col-form-label">Masalah</label>
-														<div class="col-sm-10">
-															<!-- checkbox -->
-															<div class="row">
-																<div class="col-md-6">
-																	@foreach($masalah as $m)
-																	<div class="form-check">
-																		<input name="masalah[]" value="{{$m->id}}" {{ in_array($m->id, $konseling_masalah) ? 'checked' : '' }} class="form-check-input" type="checkbox">
-																		<label class="form-check-label">{{$m->nama}}</label>
-																	</div>
-																	@endforeach
-																</div>
-																<!-- <div class="col-md-6">
-																	<div class="form-check">
-																		<input class="form-check-input" type="checkbox">
-																		<label class="form-check-label">Penyakit n</label>
-																	</div>
-																	<div class="form-check">
-																		<input class="form-check-input" type="checkbox">
-																		<label class="form-check-label">Penyakit n</label>
-																	</div>
-																	<div class="form-check">
-																		<input class="form-check-input" type="checkbox">
-																		<label class="form-check-label">Penyakit n</label>
-																	</div>
-																</div> -->
-															</div>
-														</div>
-													</div>
-													<div class="form-group row">
-														<label for="inputExperience" class="col-sm-2 col-form-label">Kesimpulan</label>
-														<div class="col-sm-10">
-															<textarea name="kesimpulan" class="form-control" id="inputExperience" placeholder="kesimpulan" @if($data->status==0)disabled @endif>{!!$konseling['kesimpulan']!!}</textarea>
-															<small>Inputkan data berdasarkan field yang diminta</small>
-														</div>
-													</div>
-													<div class="form-group row">
-														<label for="inputExperience" class="col-sm-2 col-form-label">Saran</label>
-														<div class="col-sm-10">
-															<textarea name="saran" class="form-control" id="inputExperience" placeholder="saran" @if($data->status==0)disabled @endif>{!!$konseling['saran']!!}</textarea>
-															<small>Inputkan data berdasarkan field yang diminta</small>
-														</div>
-													</div>
-													<div class="form-group row">
-														<label for="customFile" class="col-sm-2 col-form-label">Dokumentasi</label>
-
-														<div class="col-sm-10">
-															@if($konseling['berkas_pendukung'])
-																<!-- cek apakah file ada di folder -->
-																@if(file_exists(storage_path('app/public/uploads/berkas_pendukung/'.$konseling['berkas_pendukung'])))
-																	<img class="img-fluid" src="{{asset('storage/uploads/berkas_pendukung/'.$konseling['berkas_pendukung'])}}">
-																@else
-																	<img class="img-fluid" src="{{asset('img/pp_user.jpg')}}">
-																@endif
-															@endif
-															<div class="custom-file">
-																@if($data->status!=0)
-																<input type="file" name="berkas_pendukung" class="custom-file-input form-control" id="customFile">
-																<label class="custom-file-label" for="customFile">Pilih Berkas</label>
-																@else
-																<small>xxx</small>
-																@endif
-															</div>
-															<small>Input file yang berekstensi jpg, jpeg dan png</small>
-														</div>
-													</div>
-													<!-- <div class="form-group row">
-														<div class="offset-sm-2 col-sm-10">
-															<div class="checkbox">
-																<label>
-																	<input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
-																</label>
-															</div>
-														</div>
-													</div> -->
-													<div class="form-group row">
-														<div class="offset-sm-2 col-sm-10">
-															<button type="submit" class="btn btn-success" @if($data->status==0)disabled @endif>Kirim Data</button>
-														</div>
-													</div>
-												</form>
+												<div class="btn-group float-right">
+													@if($evaluasi==null)
+													<a href="{{route('backend.evaluasi', $data->token)}}" class="btn btn-primary">
+													@else
+													<a class="btn btn-primary disabled">
+													@endif
+														Kirim Form Evaluasi ke Klien
+													</a>
+												</div>
 											</div>
-											<!-- /.card-body -->
+											<!-- .col-11 -->
 										</div>
-										<!-- /.card -->
-									</div>
-									<!-- /.tab-pane -->
-									
+										<!-- .evaluasi -->
 
-									<div class="tab-pane" id="evaluasi">
-										<div class="col-11">
-											<div class="callout callout-info">
+										<div class="tab-pane" id="settings">
+											<div class="callout callout-danger">
 												<h5>Perhatian!</h5>
 												<p>
-													Formulir ini ditujukan untuk klien yang telah selesai melakukan konseling. Untuk mengirim form ke klien klik tombol di bawah. Klien akan mendapatkan formulir evaluasi melalui email & Whatsapp.
-
-													@if($evaluasi!=null)
-													<br><b>Catatan: Form evaluasi sudah diinputkan oleh klien.</b>
-													@endif
+												@if($data->status==0) 
+													Mohon untuk mengkonfirmasi konseling pada tab 'informasi' terlebih dahulu sebelum menginputkan hasil konseling. 
+												@elseif($data->status==2)
+													Anda sudah menginputkan data konseling sebelumnya. Jika ingin mengubah data, silahkan inputkan kembali data yang baru.
+												@else
+													Anda sedang dalam proses konseling. Mohon untuk menginputkan data konseling setelah selesai melakukan assessment.
+												@endif
 												</p>
 											</div>
 											<!-- .callout -->
-											@if($evaluasi!=null)
-											<hr>
-											<div class="form-group">
-												<label>Seberapa membantu layanan konseling yang diberikan?
-												</label>
-												<select class="form-control" disabled>
-													<option>-</option>
-													<option @if($evaluasi->nilai_layanan==4) {{"selected"}} @endif>Sangat Membantu</option>
-													<option @if($evaluasi->nilai_layanan==3) {{"selected"}} @endif>Membantu</option>
-													<option @if($evaluasi->nilai_layanan==2) {{"selected"}} @endif>Cukup Membantu</option>
-													<option @if($evaluasi->nilai_layanan==1) {{"selected"}} @endif>Kurang Membantu</option>
-												</select>
+
+											<div class="card card-primary">
+												<div class="card-header">
+													<h3 class="card-title">Form Input Data Konseling</h3>
+												</div>
+												<!-- /.card-header -->
+												<div class="card-body">
+													@if($data->status!=2)
+													<form enctype="multipart/form-data" action="{{route('backend.storeHasil')}}" method="POST" class="form-horizontal">
+													@else
+													<form enctype="multipart/form-data" action="{{route('backend.updateHasil', $data->konseling_id)}}" method="POST" class="form-horizontal">
+													@endif
+														@csrf
+														<input type="hidden" name="mas_id" value="{{$data->token}}">
+														<input type="hidden" name="keluhan_id" value="{{$data->keluhan_id}}">
+														<input type="hidden" name="konseling_id" value="{{$data->konseling_id}}">
+
+
+														<div class="form-group row">
+															<label for="inputExperience" class="col-sm-2 col-form-label">Hasil Assessment</label>
+															<div class="col-sm-10">
+																<textarea class="form-control" name="hasil" id="hasil" placeholder="hasil" @if($data->status==0)disabled @endif>{!!$konseling['hasil']!!}</textarea>
+																<small>Inputkan data berdasarkan field yang diminta</small>
+															</div>
+														</div>
+
+														<div class="form-group row">
+															<label for="masalah" class="col-sm-2 col-form-label">Masalah</label>
+															<div class="col-sm-10">
+																<!-- checkbox -->
+																<div class="row">
+																	<div class="col-md-6">
+																		@foreach($masalah as $m)
+																		<div class="form-check">
+																			<input name="masalah[]" value="{{$m->id}}" {{ in_array($m->id, $konseling_masalah) ? 'checked' : '' }} class="form-check-input" type="checkbox">
+																			<label class="form-check-label">{{$m->nama}}</label>
+																		</div>
+																		@endforeach
+																	</div>
+																	<!-- <div class="col-md-6">
+																		<div class="form-check">
+																			<input class="form-check-input" type="checkbox">
+																			<label class="form-check-label">Penyakit n</label>
+																		</div>
+																		<div class="form-check">
+																			<input class="form-check-input" type="checkbox">
+																			<label class="form-check-label">Penyakit n</label>
+																		</div>
+																		<div class="form-check">
+																			<input class="form-check-input" type="checkbox">
+																			<label class="form-check-label">Penyakit n</label>
+																		</div>
+																	</div> -->
+																</div>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label for="inputExperience" class="col-sm-2 col-form-label">Kesimpulan</label>
+															<div class="col-sm-10">
+																<textarea name="kesimpulan" class="form-control" id="inputExperience" placeholder="kesimpulan" @if($data->status==0)disabled @endif>{!!$konseling['kesimpulan']!!}</textarea>
+																<small>Inputkan data berdasarkan field yang diminta</small>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label for="inputExperience" class="col-sm-2 col-form-label">Saran</label>
+															<div class="col-sm-10">
+																<textarea name="saran" class="form-control" id="inputExperience" placeholder="saran" @if($data->status==0)disabled @endif>{!!$konseling['saran']!!}</textarea>
+																<small>Inputkan data berdasarkan field yang diminta</small>
+															</div>
+														</div>
+														<div class="form-group row">
+															<label for="customFile" class="col-sm-2 col-form-label">Dokumentasi</label>
+
+															<div class="col-sm-10">
+																@if($konseling['berkas_pendukung'])
+																	<!-- cek apakah file ada di folder -->
+																	@if(file_exists(storage_path('app/public/uploads/berkas_pendukung/'.$konseling['berkas_pendukung'])))
+																		<img class="img-fluid" src="{{asset('storage/uploads/berkas_pendukung/'.$konseling['berkas_pendukung'])}}">
+																	@else
+																		<img class="img-fluid" src="{{asset('img/pp_user.jpg')}}">
+																	@endif
+																@endif
+																<div class="custom-file">
+																	@if($data->status!=0)
+																	<input type="file" name="berkas_pendukung" class="custom-file-input form-control" id="customFile">
+																	<label class="custom-file-label" for="customFile">Pilih Berkas</label>
+																	@else
+																	<small>xxx</small>
+																	@endif
+																</div>
+																<small>Input file yang berekstensi jpg, jpeg dan png</small>
+															</div>
+														</div>
+														<!-- <div class="form-group row">
+															<div class="offset-sm-2 col-sm-10">
+																<div class="checkbox">
+																	<label>
+																		<input type="checkbox"> I agree to the <a href="#">terms and conditions</a>
+																	</label>
+																</div>
+															</div>
+														</div> -->
+														<div class="form-group row">
+															<div class="offset-sm-2 col-sm-10">
+																<button type="submit" class="btn btn-success" @if($data->status==0)disabled @endif>Kirim Data</button>
+															</div>
+														</div>
+													</form>
+												</div>
+												<!-- /.card-body -->
 											</div>
-											<div class="form-group">
-												<label>Setelah konseling, seberapa mengganggu keluhan yang Anda rasakan pada aktivitas sehari-hari?
-												</label>
-												<select class="form-control" disabled>
-													<option>-</option>
-													<option @if($evaluasi->nilai_keluhan==4) {{"selected"}} @endif>Sangat Membantu</option>
-													<option @if($evaluasi->nilai_keluhan==3) {{"selected"}} @endif>Membantu</option>
-													<option @if($evaluasi->nilai_keluhan==2) {{"selected"}} @endif>Cukup Membantu</option>
-													<option @if($evaluasi->nilai_keluhan==1) {{"selected"}} @endif>Kurang Membantu</option>
-												</select>
-											</div>
-											<div class="form-group">
-												<label>Apakah anda bersedia merekomendasikan layanan konseling ini ke rekan/keluarga yang membutuhkan?
-												</label>
-												<select class="form-control" disabled>
-													<option>-</option>
-													<option @if($evaluasi->rekomendasi==1) {{"selected"}} @endif>Bersedia</option>
-													<option @if($evaluasi->rekomendasi==0) {{"selected"}} @endif>Tidak Bersedia</option>
-												</select>
-											</div>
-											@endif
-											<div class="btn-group float-right">
-												@if($evaluasi==null)
-												<a href="{{route('backend.evaluasi', $data->token)}}" class="btn btn-primary">
-												@else
-												<a class="btn btn-primary disabled">
-												@endif
-													Kirim Form Evaluasi ke Klien
-												</a>
-											</div>
+											<!-- /.card -->
 										</div>
-										<!-- .col-11 -->
-									</div>
-									<!-- .evaluasi -->
+										<!-- /.tab-pane -->
 									@endif
 								</div>
 								<!-- .col-12 -->
