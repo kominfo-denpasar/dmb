@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\MasyarakatDataTable;
 use App\Http\Requests\CreateMasyarakatRequest;
 use App\Http\Requests\UpdateMasyarakatRequest;
 use App\Http\Controllers\AppBaseController;
@@ -32,12 +33,14 @@ class MasyarakatController extends AppBaseController
     /**
      * Display a listing of the Masyarakat.
      */
-    public function index(Request $request)
+    public function index(MasyarakatDataTable $masyarakatDataTable)
     {
-        $masyarakats = $this->masyarakatRepository->paginate(10);
+        // $masyarakats = $this->masyarakatRepository->paginate(10);
 
-        return view('masyarakats.index')
-            ->with('masyarakats', $masyarakats);
+        return $masyarakatDataTable->render('masyarakats.index');
+
+        // return view('masyarakats.index')
+        //     ->with('masyarakats', $masyarakats);
     }
 
     /**
