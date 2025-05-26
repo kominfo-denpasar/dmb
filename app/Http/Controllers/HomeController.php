@@ -8,6 +8,10 @@ use App\Models\Masyarakat as Client;
 use App\Models\dasshasil as Dass21Result;
 use App\Models\Konseling;
 
+use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+
 class HomeController extends Controller
 {
     /**
@@ -27,10 +31,31 @@ class HomeController extends Controller
      */
     public function index()
     {
+		$data = DB::table('dasshasils')
+			->select('hasil_akhir', DB::raw('MONTH(created_at) as bulan'))
+			->get();
+
+		$rekap = [];
+
+		foreach ($data as $item) {
+			$lines = explode("\n", $item->hasil_akhir);
+			foreach ($lines as $line) {
+				if (strpos($line, ':') !== false) {
+					[$kategori, $level] = array_map('trim', explode(':', $line));
+					if (!isset($rekap[$kategori][$level])) {
+						$rekap[$kategori][$level] = 0;
+					}
+					$rekap[$kategori][$level]++;
+				}
+			}
+		}
+
         $this->user = $this->getUser();
             
         if(!$this->user->hasRole('admin')) return redirect()->route('home-psikolog');
-        else return view('backend/home');
+        else return view('backend/home', [
+			'dassPie' => $rekap
+		]);
     }
 
     /**
@@ -46,32 +71,39 @@ class HomeController extends Controller
     public function data(Request $request)
 	{
 		$year = $request->input('year', now()->year);
+		$month = $request->input('month');
 
-		// Jumlah klien per bulan
-		$clients = Client::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
-			->whereYear('created_at', $year)
-			->groupBy('month')
-			->pluck('total', 'month');
+		$clientQuery = Client::whereYear('created_at', $year);
+		$dassQuery = Dass21Result::whereYear('created_at', $year);
+		$konselingQuery = Konseling::whereYear('created_at', $year);
 
-		// DASS21 per kategori per bulan
-		$dass = Dass21Result::selectRaw('MONTH(created_at) as month, nilai_d, COUNT(*) as total')
+		if ($month) {
+			$clientQuery->whereMonth('created_at', $month);
+			$dassQuery->whereMonth('created_at', $month);
+			$konselingQuery->whereMonth('created_at', $month);
+		}
+
+		// Klien per bulan
+		$clients = Client::selectRaw('MONTH(created_at) as month, status, COUNT(*) as total')
 			->whereYear('created_at', $year)
-			->groupBy('month', 'nilai_d')
+			->when($month, fn($q) => $q->whereMonth('created_at', $month))
+			->groupBy('month', 'status')
 			->get()
-			->groupBy('nilai_d')
-			->map(function ($rows) {
-				return $rows->pluck('total', 'month');
-			});
+			->groupBy('status')
+			->map(fn($rows) => $rows->pluck('total', 'month'));;
+		
 
 		// Konseling per bulan
-		$konseling = Konseling::selectRaw('MONTH(created_at) as month, COUNT(*) as total')
+		$konseling = Konseling::selectRaw('MONTH(created_at) as month, status, COUNT(*) as total')
 			->whereYear('created_at', $year)
-			->groupBy('month')
-			->pluck('total', 'month');
+			->when($month, fn($q) => $q->whereMonth('created_at', $month))
+			->groupBy('month', 'status')
+			->get()
+			->groupBy('status')
+			->map(fn($rows) => $rows->pluck('total', 'month'));
 
 		return response()->json([
 			'clients' => $clients,
-			'dass' => $dass,
 			'konseling' => $konseling,
 		]);
 	}
