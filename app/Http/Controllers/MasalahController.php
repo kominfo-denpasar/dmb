@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DataTables\MasalahDataTable;
 use App\Http\Requests\CreateMasalahRequest;
 use App\Http\Requests\UpdateMasalahRequest;
 use App\Http\Controllers\AppBaseController;
@@ -22,9 +23,10 @@ class MasalahController extends AppBaseController
     /**
      * Display a listing of the Masalah.
      */
-    public function index(Request $request)
+    public function index(MasalahDataTable $masalahDataTable)
     {
-        $masalahs = $this->masalahRepository->paginate(10);
+        // $masalahs = $this->masalahRepository->paginate(10);
+        return $masalahDataTable->render('masalahs.index');
 
         return view('masalahs.index')
             ->with('masalahs', $masalahs);

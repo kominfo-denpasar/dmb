@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Masalahs</h1>
+                    <h1>Data Masalah</h1>
                 </div>
                 <div class="col-sm-6">
                     <a class="btn btn-primary float-right"
                        href="{{ route('masalahs.create') }}">
-                        Add New
+                        Tambah Baru
                     </a>
                 </div>
             </div>
