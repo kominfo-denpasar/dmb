@@ -14,6 +14,7 @@ use App\Models\Evaluasi;
 
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HomePsikologController extends Controller
 {
