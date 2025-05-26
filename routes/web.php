@@ -50,6 +50,7 @@ Route::get('/privasi', [App\Http\Controllers\FrontController::class, 'privasi'])
 Route::get('/artikel/{slug}', [App\Http\Controllers\FrontController::class, 'blogDetail'])->name('front.blog-detail');
 Route::get('/artikel', [App\Http\Controllers\FrontController::class, 'blogList'])->name('front.blog-list');
 
+
 Auth::routes();
 
 Route::group([
@@ -60,6 +61,9 @@ Route::group([
 
         Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profil'])->name('backend.profil');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+        // dashboard
+        Route::get('/dashboard/data', [App\Http\Controllers\HomeController::class, 'data']);
 
         Route::prefix('home-psikolog')->group(function () {
             Route::get('/', [App\Http\Controllers\HomePsikologController::class, 'index'])->name('home-psikolog');
