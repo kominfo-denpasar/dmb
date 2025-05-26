@@ -8,10 +8,6 @@
                     <h1>Logs</h1>
                 </div>
                 <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
-                       href="{{ route('logs.create') }}">
-                        Add New
-                    </a>
                 </div>
             </div>
         </div>
