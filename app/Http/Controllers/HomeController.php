@@ -8,6 +8,7 @@ use App\Models\Masyarakat as Client;
 use App\Models\dasshasil as Dass21Result;
 use App\Models\Konseling;
 use App\Models\Psikolog;
+use App\Models\User;
 
 use App\Http\Requests\UpdatePsikologRequest;
 use App\Repositories\PsikologRepository;
@@ -89,7 +90,17 @@ class HomeController extends Controller
 	{
 		$this->user = $this->getUser();
 
-		$psikolog = psikolog::join('users', 'psikologs.id', '=', 'users.psikolog_id')
+		// dd($psikolog);
+		// dd($this->user->psikolog);
+
+		if($this->user->hasRole('admin')) {
+			// jika admin, tampilkan profil user
+			
+			return view('backend/profil', [
+				'user' => $this->user
+			]);
+		} else if($this->user->hasRole('psikolog')) {
+			$psikolog = psikolog::join('users', 'psikologs.id', '=', 'users.psikolog_id')
 			->select('psikologs.*','users.email')
 			->where([
 				'psikologs.status' => 1,
@@ -97,14 +108,6 @@ class HomeController extends Controller
 			])
 			->first();
 
-		// dd($psikolog);
-		// dd($this->user->psikolog);
-
-		if($this->user->hasRole('admin')) {
-			return view('backend/profil', [
-				'user' => $this->user
-			]);
-		} else if($this->user->hasRole('psikolog')) {
 			return view('backend/profil', [
 				'user' => $this->user,
 				'psikolog' => $psikolog,
@@ -205,6 +208,26 @@ class HomeController extends Controller
 	 */
 	public function updateProfilAdmin($id, Request $request)
 	{
+		// update user data
+		$user = User::find($id);
+		if (empty($user)) {
+			Flash::error('User tidak ditemukan.');
+			return redirect(route('backend.profil'));
+		}
+		$input = $request->all();
+		if ($request->has('password') && $request->password) {
+			$input['password'] = bcrypt($request->password);
+		} else {
+			unset($input['password']);
+		}
+		$user->update($input);
+		// update session user
+		$this->user = Auth::user();
+		$updatedUser = $this->user->fresh(); // Get the updated user
+		Auth::setUser($updatedUser); // Update the session
+		Flash::success('Data berhasil diupdate.');
+		
+		return redirect(route('backend.profil'));
 
 	}
 
