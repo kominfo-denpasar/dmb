@@ -84,6 +84,7 @@ Route::group([
         Route::prefix('master')->group(function () {
             Route::get('psikologs/json', [App\Http\Controllers\PsikologController::class, 'indexJson'])->name('backend.psikolog-json');
             Route::get('psikologs/keluhan-json/{id}', [App\Http\Controllers\PsikologController::class, 'keluhanJson'])->name('backend.psikolog-keluhan-json');
+            Route::get('konselings/masyarakat-json/{mas_id}', [App\Http\Controllers\KonselingController::class, 'masyarakatJson'])->name('backend.masyarakat-json');
             Route::resource('psikologs', App\Http\Controllers\PsikologController::class);
             Route::resource('masyarakats', App\Http\Controllers\MasyarakatController::class);
             Route::resource('dassPertanyaans', App\Http\Controllers\dassPertanyaanController::class);
@@ -92,6 +93,7 @@ Route::group([
             Route::resource('masalahs', App\Http\Controllers\MasalahController::class);
             Route::resource('konselings', App\Http\Controllers\KonselingController::class);
             Route::resource('konseling-masalahs', App\Http\Controllers\KonselingMasalahController::class);
+
         });
 
         Route::prefix('data')->group(function () {

@@ -6,8 +6,11 @@ use App\Http\Requests\CreateKonselingRequest;
 use App\Http\Requests\UpdateKonselingRequest;
 use App\Http\Controllers\AppBaseController;
 use App\Repositories\KonselingRepository;
+use App\Models\Konseling;
 use Illuminate\Http\Request;
 use Flash;
+use Yajra\Datatables\Datatables;
+use App\Models\Psikolog;
 
 class KonselingController extends AppBaseController
 {
@@ -124,5 +127,58 @@ class KonselingController extends AppBaseController
         Flash::success('Konseling deleted successfully.');
 
         return redirect(route('konselings.index'));
+    }
+
+     /**
+     * Get Masyarakat data for DataTables.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function masyarakatJson($mas_id)
+    {
+
+        // get data by mas_id
+        $sql = Konseling::where('mas_id', $mas_id)
+            ->join('masyarakats', 'konselings.mas_id', '=', 'masyarakats.token')
+            ->leftJoin('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
+            ->select(
+                'konselings.id',
+                'konselings.created_at',
+                'psikologs.nama',
+                'konselings.hasil',
+                'konselings.kesimpulan',
+                'konselings.saran',
+                'konselings.status',
+            )
+            ->orderBy('konselings.created_at', 'desc')
+            ->get();
+
+            // get all data withou filtering id masyarakat
+        // $sql = Konseling::select([
+        //     'id',
+        //     'created_at',
+        //     'psikolog_id',
+        //     'hasil',
+        //     'kesimpulan',
+        //     'saran',
+        //     'status'
+        // ]);
+
+        return DataTables::of($sql)
+            ->addColumn('aksi', function($sql){
+                return view('layouts/datatables_action_masyarakat', compact('sql'));
+            })
+            ->editColumn('created_at', function($sql){
+                return date('d/m/Y', strtotime($sql->created_at));
+            })
+            ->editColumn('status', function($sql){
+                if ($sql->status == 2) return "<span class='badge bg-success'>Selesai</span>";
+                if ($sql->status == 1) return "<span class='badge bg-warning'>On Progress</span>";
+                if ($sql->status == 3) return "<span class='badge bg-danger'>Batal</span>";
+                return "<span class='badge bg-info'>Menunggu</span>";
+            })
+            ->rawColumns(['aksi', 'status'])
+            ->make(true);
     }
 }
