@@ -193,13 +193,34 @@ class HomeController extends Controller
 
 		$psikolog = $this->psikologRepository->update($input, $id);
 
+		// update user data
+		$user = User::where('psikolog_id', $id)->first();
+		if (empty($user)) {
+			Flash::error('User tidak ditemukan.');
+			return redirect(route('backend.profil'));
+		}
+		// $input = $request->all();
+		if ($request->has('password') && $request->password) {
+			$input['password'] = bcrypt($request->password);
+		} else {
+			unset($input['password']);
+		}
+
+		$input['name'] = $input['nama'];
+		$result = $user->update($input);
+
 		// update session user
 		$this->user = Auth::user();
 		$updatedUser = $this->user->fresh(); // Get the updated user
 		Auth::setUser($updatedUser); // Update the session
 
-		Flash::success('Data berhasil diupdate.');
-
+		if($result && $psikolog) {
+			// jika update sukses
+			Flash::success('Data berhasil diupdate.');
+		} else {
+			// jika update gagal
+			Flash::error('Data gagal diupdate.');
+		}
 		return redirect(route('backend.profil'));
 	}
 
@@ -220,12 +241,20 @@ class HomeController extends Controller
 		} else {
 			unset($input['password']);
 		}
-		$user->update($input);
+		$result = $user->update($input);
 		// update session user
 		$this->user = Auth::user();
 		$updatedUser = $this->user->fresh(); // Get the updated user
 		Auth::setUser($updatedUser); // Update the session
-		Flash::success('Data berhasil diupdate.');
+		
+		
+		if($result) {
+			// jika update sukses
+			Flash::success('Data berhasil diupdate.');
+		} else {
+			// jika update gagal
+			Flash::error('Data gagal diupdate.');
+		}
 		
 		return redirect(route('backend.profil'));
 
