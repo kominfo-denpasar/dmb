@@ -116,7 +116,8 @@
 			// "ajax": "{{ route('backend.masyarakat-json', $masyarakat->token) }}"
 			"columns": [
 				{ data: "aksi", name:"aksi", orderable:false},
-				{ data: "created_at", name:"created_at"},
+				// { data: "created_at", name:"created_at"},
+				{ data: "keluhan_id", name:"keluhan_id"},
 				{ data: "nama", name:"nama"},
 				{ data: "hasil", name:"hasil"},
 				{ data: "kesimpulan", name:"kesimpulan"},

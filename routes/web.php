@@ -85,6 +85,9 @@ Route::group([
             Route::get('psikologs/json', [App\Http\Controllers\PsikologController::class, 'indexJson'])->name('backend.psikolog-json');
             Route::get('psikologs/keluhan-json/{id}', [App\Http\Controllers\PsikologController::class, 'keluhanJson'])->name('backend.psikolog-keluhan-json');
             Route::get('konselings/masyarakat-json/{mas_id}', [App\Http\Controllers\KonselingController::class, 'masyarakatJson'])->name('backend.masyarakat-json');
+
+            Route::get('/konseling/details/{id}', [App\Http\Controllers\KonselingController::class, 'konselingDetails'])->name('konseling.details');
+            
             Route::resource('psikologs', App\Http\Controllers\PsikologController::class);
             Route::resource('masyarakats', App\Http\Controllers\MasyarakatController::class);
             Route::resource('dassPertanyaans', App\Http\Controllers\dassPertanyaanController::class);
