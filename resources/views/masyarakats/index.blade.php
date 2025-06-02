@@ -1,17 +1,17 @@
 @extends('layouts.app')
-
+@section('page-title', 'Data Masyarakats')
+@section('breadcrumb')
+    <li class="breadcrumb-item active"> Data Masyarakats</li>
+@endsection
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-6">
-                    <h1>Masyarakats</h1>
-                </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-primary float-right"
+                    {{-- <a class="btn btn-primary float-right"
                        href="{{ route('masyarakats.create') }}">
                         Add New
-                    </a>
+                    </a> --}} <!-- Hide button add new to create new masyarakats -->
                 </div>
             </div>
         </div>

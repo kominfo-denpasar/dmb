@@ -16,17 +16,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use App\Traits\dateTransform;
-
-use Carbon\Carbon;
+use App\Http\Controllers\PhpMailController;
 
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class FrontController extends Controller
 {
-
-	use dateTransform;
-
 	/**
 	 * Create a new controller instance.
 	 *
@@ -578,90 +573,19 @@ class FrontController extends Controller
 	public function jadwalPsikolog($id)
 	{
 		// get jadwal
-		$jadwal = jadwal::where('psikolog_id', $id)
-			->get();
+		// $jadwal = jadwal::where('psikolog_id', $id)
+		// 	->get();
 
-		// cek apakah jadwal belum terisi oleh masyarakat lain
-		$eventResult = [];
-		foreach($jadwal as $key => $value) {
-			$date = $this->getUpcomingDatesByDayName($value->hari);
-			foreach($date as $k => $v) {
-				$eventResult[] = array(
-					"date" => $v,
-					"times" => explode(',', $value->jam)
-				);
-			}
-		}
-
-		// 1. Ambil semua jadwal yang sudah dipakai
-		$existing = Keluhan::where('status', 0)
-			->where('psikolog_id', $id)
-			->get([
-				'jadwal_tgl', 'jadwal_jam',
-				'jadwal_alt_tgl', 'jadwal_alt_jam',
-				'jadwal_alt2_tgl', 'jadwal_alt2_jam',
-			]);
-
-		// 2. Buat key lookup seperti "2025-05-28|09:00"
-		$used = [];
-
-		foreach ($existing as $item) {
-			$kombinasi = [
-				[$item->jadwal_tgl, $item->jadwal_jam],
-				[$item->jadwal_alt_tgl, $item->jadwal_alt_jam],
-				[$item->jadwal_alt2_tgl, $item->jadwal_alt2_jam],
-			];
-
-			foreach ($kombinasi as [$tgl, $jam]) {
-				if ($tgl && $jam) {
-					$tglStr = Carbon::parse($tgl)->format('Y-m-d');
-					$key = $tglStr . '|' . trim($jam);
-					$used[$key] = true;
-				}
-			}
-		}
-
-		// 3. Cek eventResult
-		$filtered = [];
-
-		foreach ($eventResult as $event) {
-			$tanggal = Carbon::parse($event['date'])->format('Y-m-d');
-			foreach ($event['times'] as $jam) {
-				$jam = trim($jam);
-				$key = $tanggal . '|' . $jam;
-				if (!isset($used[$key])) {
-					$filtered[] = [
-						'date' => $tanggal,
-						'time' => $jam,
-					];
-				}
-			}
-		}
-		// dd($filtered);
-
-		// Kelompokkan berdasarkan tanggal
-		$grouped = collect($filtered)
-			->groupBy('date')
-			->map(function ($items, $date) {
-				return [
-					'date' => $date,
-					'times' => $items->pluck('time')->values()->all()
-				];
-			})
-			->values()
-			->all();
-
-		// dd($grouped);
-		
-
-		// $eventResult = array(
-		// 	array("date" => "2025-05-28", "times" => ["09:00", "10:00", "13:00"]),
-		// 	array("date" => "2025-05-01", "times" => ["08:00", "11:00"]),
-		// 	array("date" => "2025-05-03", "times" => ["10:00", "14:00"]),
-		// );
+		$eventResult = array(
+			array("title" => "Weekend Party - at Hue residency", "date"=>"2025-05-08"),
+			array("title" => "Anniversary Celebration - at Meridian Hall", "date"=>"2025-05-11"),
+			array("title" => "Yearly Get Together - at College Campus", "date"=>"2025-05-20"),
+			array("title" => "Food Festival", "date"=>"2025-05-31")
+		);
 
 		// echo json_encode($eventResult);
-		return response()->json($grouped);
+		// return response()->json($jadwal);
+		return response()->json($eventResult);
 		
 	}
 
@@ -673,25 +597,26 @@ class FrontController extends Controller
 	 */
 	public function konselingJadwalStore(Request $request)
 	{
-		// dd($request);
 		//validate form
 		$this->validate($request, [
 			'psikolog_id'   => 'required',
-			// 'jadwal_id'   => 'required',
+			'jadwal_id'   => 'required',
 			'mas_id'   => 'required',
-			'utama'   => 'required',
-			'alternatif'   => 'required'
+			'jadwal_tgl'   => 'required',
+			'jadwal_jam'   => 'required',
+			'jadwal_alt_tgl'   => 'required',
+			'jadwal_alt_jam'   => 'required'
 		]);
 
 		// updata data keluhan
-		$keluhan = keluhan::where(['mas_id' => $request->mas_id, 'status' => 0])
+		$keluhan = keluhan::where(['mas_id' => $request->mas_id])
 		->update([
 			'psikolog_id'   	=> $request->psikolog_id,
-			// 'jadwal_id'     	=> $request->jadwal_id,
-			'jadwal_tgl'     	=> $request->utama['tanggal'],
-			'jadwal_jam'     	=> $request->utama['jam'],
-			'jadwal_alt_tgl'   	=> $request->alternatif['tanggal'],
-			'jadwal_alt_jam'   	=> $request->alternatif['jam']
+			'jadwal_id'     	=> $request->jadwal_id,
+			'jadwal_tgl'     	=> $request->jadwal_tgl,
+			'jadwal_jam'     	=> $request->jadwal_jam,
+			'jadwal_alt_tgl'   	=> $request->jadwal_alt_tgl,
+			'jadwal_alt_jam'   	=> $request->jadwal_alt_jam
 		]);
 
 		//redirect to konseling final
@@ -710,26 +635,27 @@ class FrontController extends Controller
 	{
 		//ambil data join masyarakat, keluhan dan jadwal
 		$masyarakat = Masyarakat::join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
+			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->join('psikologs', 'keluhans.psikolog_id', '=', 'psikologs.id')
 			->select(
-				'masyarakats.token', 
 				'masyarakats.nik', 
 				'masyarakats.nama', 
 				'masyarakats.hp', 
 				'keluhans.keluhan', 
-				'keluhans.jadwal_tgl', 
-				'keluhans.status', 
-				'keluhans.jadwal_jam', 
+				'jadwals.hari', 
+				'jadwals.jam', 
 				'psikologs.id as psikolog_id',
 				'psikologs.nama as psikolog',
 				'psikologs.alamat_praktek',
-				'psikologs.hp as psikolog_hp'
-			)
-			->where('masyarakats.token', $id)
-			->where(function($query) {
-				$query->where('keluhans.status', 0)
-					->orWhere('keluhans.status', 1);
-			})
+				'psikologs.hp as psikolog_hp')
+			->where([
+				'masyarakats.token' => $id,
+				'keluhans.status' => 0
+			])
+			->orWhere([
+				'masyarakats.token' => $id,
+				'keluhans.status' => 1
+			])
 			->first();
 		
 		// dd($masyarakat);
@@ -757,36 +683,27 @@ class FrontController extends Controller
 			$alamat_web = url()->to('/').'/login';
 			$data =[
 				'phone' => '0'.$masyarakat->psikolog_hp,
-				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
+			// Kirim email
+			$mailController = new PhpMailController();
+			$mailController->FinalKonseling($masyarakat,$alamat_web);
+
 			$data = [
 				'phone' => '0'.$masyarakat->hp,
-				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 		}
 
 		// cek apakah sudah mengisi semua form konseling
 		if(Session::get('jadwal') && $masyarakat) {
-			//get data konten dari tabel pengaturan
-			$selanjutnya = DB::table('pengaturans')
-				->select('value')
-				->where('slug', 'selanjutnya')
-				->first();
-
-			$jika_lewat = DB::table('pengaturans')
-				->select('value')
-				->where('slug', 'jika-lewat')
-				->first();
-
 			return view('front.konseling_final', [
 				'mas_id' => $id, 
-				'masyarakat' => $masyarakat,
-				'selanjutnya' => $selanjutnya,
-				'jika_lewat' => $jika_lewat
-				]);
+				'masyarakat' => $masyarakat]
+			);
 		} else {
 			return redirect()->route('front.survei-intro');
 		}
@@ -956,7 +873,10 @@ class FrontController extends Controller
 		} else {
 			return view('front.404');
 		}
-	
+		
+        
+
+		
 	}
 
 	/**

@@ -1,22 +1,10 @@
 @extends('layouts.app')
-
+@section('page-title', 'Laporan Detail Konseling')
+@section('breadcrumb')
+	<li class="breadcrumb-item"><a href="{{route('backend.konseling', $data->keluhan_id)}}">Detail Konseling</a></li>
+    <li class="breadcrumb-item active">Laporan Detail Konseling</li>
+@endsection
 @section('content') 
-	<section class="content-header">
-		<div class="container-fluid">
-		<div class="row mb-2">
-			<div class="col-sm-6">
-			<h1>Laporan Detail Konseling</h1>
-			</div>
-			<div class="col-sm-6">
-			<ol class="breadcrumb float-sm-right">
-				<li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard Psikolog</a></li>
-				<li class="breadcrumb-item"><a href="{{route('backend.konseling', $data->keluhan_id)}}">Detail Konseling</a></li>
-				<li class="breadcrumb-item active">Laporan Detail Konseling</li>
-			</ol>
-			</div>
-		</div>
-		</div><!-- /.container-fluid -->
-	</section>
 
 	<section class="content">
 		<div class="container-fluid">
