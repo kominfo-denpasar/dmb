@@ -8,8 +8,10 @@ use App\Http\Controllers\AppBaseController;
 use App\Repositories\PsikologRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+// use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Flash;
-
+// use App\Models\LogAktivitas;
 use App\Models\Psikolog;
 use App\Models\User;
 use App\Models\keluhan;
@@ -105,7 +107,16 @@ class PsikologController extends AppBaseController
 			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
+		if(!empty($input['nik'])){
+			$input['nik'] = Hash::make($request->nik);
+		}
+
 		$psikolog = $this->psikologRepository->create($input);
+
+		activity()
+		  ->causedBy(auth()->user())
+		  ->performedOn($psikolog)
+		  ->log('Menambahkan data psikolog');
 
 		// buat user baru
 		$user = config('roles.models.defaultUser')::create([
@@ -236,7 +247,16 @@ class PsikologController extends AppBaseController
 			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
+		if ($request->has('nik')){
+			$input['nik'] = Hash::make($request->nik);
+		}
+
 		$psikolog = $this->psikologRepository->update($input, $id);
+
+		activity()
+		  -> causedBy(auth()->user())
+		  ->performedOn($psikolog)
+		  ->log('Memperbarui data psikolog');
 
 		Flash::success('Psikolog updated successfully.');
 
@@ -261,6 +281,11 @@ class PsikologController extends AppBaseController
 		$this->psikologRepository->delete($id);
 
 		Flash::success('Psikolog deleted successfully.');
+
+		activity()
+		->causedBy(auth()->user())
+		->performedOn($psikolog)
+		->log('Menghapus data psikolog');
 
 		return redirect(route('psikologs.index'));
 	}

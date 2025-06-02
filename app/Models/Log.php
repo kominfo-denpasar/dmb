@@ -44,5 +44,11 @@ class Log extends Model
         'updated_at' => 'nullable'
     ];
 
-    
+    public function causer() {
+        return $this->belongsTo(\App\Models\User::class, 'causer_id');
+    }
+
+    public function user() {
+        return $this->belongsTo(user::class, 'causer_id');
+    }
 }
