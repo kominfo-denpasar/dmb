@@ -1,23 +1,10 @@
 @extends('layouts.app')
-
+@section('page-title', 'Log Details')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('logs.index') }}">Data Logs</a></li>
+    <li class="breadcrumb-item active">Log Details</li>
+@endsection
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-Log Details
-                    </h1>
-                </div>
-                <div class="col-sm-6">
-                    <a class="btn btn-default float-right"
-                       href="{{ route('logs.index') }}">
-                                                    Back
-                                            </a>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
         <div class="card">

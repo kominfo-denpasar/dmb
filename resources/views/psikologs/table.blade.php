@@ -40,10 +40,17 @@
 
 	@include('layouts.datatables_js')
 	<script>
+		let selectedKec = '';
 		var tb = $('#example').DataTable({
 			"processing": true,
 			"serverSide": true,
-			"ajax": "{{ route('backend.psikolog-json') }}",
+			"ajax": {
+				"url": "{{ route('backend.psikolog-json') }}",
+				"data": function(d) {
+					d.status = '{{ request("status") }}';
+					d.kec_id = selectedKec;
+				}
+			},
 			"columns": [
 				{ data: "aksi", name:"aksi", orderable:false},
 				{ data: "nama", name:"nama"},
@@ -83,6 +90,14 @@
 				searchText2 = $(this).val();
 			}
 			tb.column(1).search(searchText2, true, false, true).draw();   
+		});
+
+		$('#wilayah_filter a').on('click', function(e) {
+			e.preventDefault();
+			selectedKec = $(this).data('kec');  // update variabel global
+			$('#wilayah_filter a').removeClass('active');
+			$(this).addClass('active');
+			tb.ajax.reload();  // reload datatable dengan filter baru
 		});
 	</script>
 @endpush

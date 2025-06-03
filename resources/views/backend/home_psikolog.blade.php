@@ -1,20 +1,7 @@
 @extends('layouts.app')
+@section('page-title', 'Dashboard-Psikolog')
 
 @section('content') 
-<section class="content-header">
-	<div class="container-fluid">
-		<div class="row mb-2">
-			<div class="col-sm-6">
-			<h1>Dashboard Psikolog</h1>
-			</div>
-			<div class="col-sm-6">
-			<ol class="breadcrumb float-sm-right">
-				<li class="breadcrumb-item active">Dashboard Psikolog</li>
-			</ol>
-			</div>
-		</div>
-	</div><!-- /.container-fluid -->
-</section>
 
 <section class="content">
 	<div class="container-fluid"> 
@@ -31,7 +18,7 @@
 				<div class="row">
 					<div class="col-12 col-sm-6 col-md-4">
 						<div class="info-box">
-						<span class="info-box-icon bg-info elevation-1"><i class="fas fa-cog"></i></span>
+						<span class="info-box-icon bg-info elevation-1"><i class="fas fa-hourglass-start"></i></span>
 
 						<div class="info-box-content">
 							<span class="info-box-text">Konseling Menunggu</span>
@@ -45,7 +32,7 @@
 					</div>
 					<div class="col-12 col-sm-6 col-md-4">
 						<div class="info-box">
-						<span class="info-box-icon bg-warning elevation-1"><i class="fas fa-cog"></i></span>
+						<span class="info-box-icon bg-warning elevation-1"><i class="fas fa-spinner"></i></span>
 
 						<div class="info-box-content">
 							<span class="info-box-text">Konseling On Progress</span>
@@ -59,7 +46,7 @@
 					</div>
 					<div class="col-12 col-sm-6 col-md-4">
 						<div class="info-box">
-						<span class="info-box-icon bg-success elevation-1"><i class="fas fa-cog"></i></span>
+						<span class="info-box-icon bg-success elevation-1"><i class="fas fa-check-circle"></i></span>
 
 						<div class="info-box-content">
 							<span class="info-box-text">Konseling Selesai</span>
@@ -102,14 +89,10 @@
 								</tr>
 							@endif
 							@foreach($keluhan as $k)
-								<tr>
-									<td>
-										{{$loop->iteration}}
-									</td>
-									<td>{{$k->nama}}</td>
-									<td>
-										{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y | h:i')}} WITA
-									</td>
+								<tr @if($k->status == 0) class="table-danger" @endif>
+									<td>{{ $loop->iteration }}</td>
+									<td>{{ $k->nama }}</td>
+									<td>{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y | h:i') }} WITA</td>
 									<td>
 										@if($k->status == 2)
 											<span class="badge bg-success">Selesai</span>
@@ -122,11 +105,11 @@
 										@endif
 									</td>
 									<td>
-										<a href="{{url('admin/home-psikolog/konseling/'.$k->id)}}" class="text-muted">
+										<a href="{{ url('admin/home-psikolog/konseling/'.$k->id) }}" class="text-muted">
 											<i class="fas fa-search"></i>
 										</a>&nbsp;
 										@if($k->status == 2)
-											<a href="{{route('backend.laporan-detail', $k->id)}}" class="text-muted">
+											<a href="{{ route('backend.laporan-detail', $k->id) }}" class="text-muted">
 												<i class="fas fa-print"></i>
 											</a>
 										@endif

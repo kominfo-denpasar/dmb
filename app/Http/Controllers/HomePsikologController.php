@@ -13,6 +13,7 @@ use App\Models\KonselingMasalah;
 use App\Models\Evaluasi;
 
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\PhpMailController;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -82,7 +83,7 @@ class HomePsikologController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
-	public function konseling($id)
+	public function konseling($id) 
 	{
 		// ambil data keluhan, konseling, dass dan detail masyarakat/klien
 		$data = Masyarakat::where('keluhans.id', $id)
@@ -278,8 +279,12 @@ class HomePsikologController extends Controller
 			'phone' => '0'.$masyarakat->hp,
 			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', $id)."\n\nSalam, Denpasar Menyama Bagia"
 		];
-
 		$this->notif_wa($data);
+
+		// Kirim email
+		$mailController = new PhpMailController();
+		$mailController->kirimEvaluasi($masyarakat);
+
 		return redirect()->route('home-psikolog')->with('message', 'Berhasil mengirimkan formulir evaluasi ke masyarakat');
 	}
 
@@ -426,6 +431,7 @@ class HomePsikologController extends Controller
 			'kesimpulan' => $request->kesimpulan,
 			'saran' => $request->saran,
 			'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+			'keluhan_id' => $request->keluhan_id,
 			'status' => 2,
 			'updated_at' => Carbon::now()
 		]);
@@ -505,6 +511,7 @@ class HomePsikologController extends Controller
 				'kesimpulan' => $request->kesimpulan,
 				'saran' => $request->saran,
 				'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+				'keluhan_id' => $request->keluhan_id,
 				'status' => 2,
 				'updated_at' => Carbon::now()
 			]);
@@ -515,6 +522,7 @@ class HomePsikologController extends Controller
 			])->update([
 				'hasil' => $request->hasil,
 				'kesimpulan' => $request->kesimpulan,
+				'keluhan_id' => $request->keluhan_id,
 				'saran' => $request->saran,
 				'status' => 2,
 				'updated_at' => Carbon::now()
@@ -581,8 +589,12 @@ class HomePsikologController extends Controller
 				'phone' => '0'.$masyarakat->hp,
 				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal $keluhan->jadwal_alt2_tgl jam $keluhan->jadwal_alt2_jam telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
 			];
-
 			$this->notif_wa($data);
+
+			// Kirim email
+			$mailController = new PhpMailController();
+			$mailController->BatalKonseling($masyarakat,$keluhan);
+
 
 			// redirect ke halaman konseling
 			return redirect()->route('backend.konseling', $id)->with('success', 'Berhasil melakukan pembatalan konseling');
@@ -638,6 +650,10 @@ class HomePsikologController extends Controller
 			'message' => "Halo $masyarakat->nama, jadwal konseling Anda telah direschedule menjadi:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 		];
 		$this->notif_wa($data);
+
+		// Kirim email
+		$mailController = new PhpMailController();
+		$mailController->RescheduleKonseling($masyarakat);
 
 		if($keluhan && $konseling) {
 			return redirect()->route('backend.konseling', $request->keluhan_id)->with('success', 'Berhasil melakukan reschedule konseling');

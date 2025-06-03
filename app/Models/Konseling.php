@@ -15,7 +15,8 @@ class Konseling extends Model
         'berkas_pendukung',
         'status',
         'psikolog_id',
-        'mas_id'
+        'mas_id',
+        'keluhan_id'
     ];
 
     protected $casts = [
@@ -25,7 +26,8 @@ class Konseling extends Model
         'berkas_pendukung' => 'string',
         'status' => 'integer',
         'psikolog_id' => 'string',
-        'mas_id' => 'string'
+        'mas_id' => 'string',
+        'keluhan_id' => 'string'
     ];
 
     public static array $rules = [

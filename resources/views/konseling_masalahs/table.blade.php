@@ -12,13 +12,13 @@
                 <tr>
                     
                     <td  style="width: 120px">
-                        {!! Form::open(['route' => ['konselingMasalahs.destroy', $konselingMasalah->id], 'method' => 'delete']) !!}
+                        {!! Form::open(['route' => ['konseling-masalahs.destroy', $konselingMasalah->id], 'method' => 'delete']) !!}
                         <div class='btn-group'>
-                            <a href="{{ route('konselingMasalahs.show', [$konselingMasalah->id]) }}"
+                            <a href="{{ route('konseling-masalahs.show', [$konselingMasalah->id]) }}"
                                class='btn btn-default btn-xs'>
                                 <i class="far fa-eye"></i>
                             </a>
-                            <a href="{{ route('konselingMasalahs.edit', [$konselingMasalah->id]) }}"
+                            <a href="{{ route('konseling-masalahs.edit', [$konselingMasalah->id]) }}"
                                class='btn btn-default btn-xs'>
                                 <i class="far fa-edit"></i>
                             </a>

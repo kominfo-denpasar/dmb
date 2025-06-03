@@ -7,8 +7,15 @@ use App\Http\Requests\CreateMasyarakatRequest;
 use App\Http\Requests\UpdateMasyarakatRequest;
 use App\Http\Controllers\AppBaseController;
 use App\Repositories\MasyarakatRepository;
+// use App\Models\Log;
 use Illuminate\Http\Request;
+ use Illuminate\Support\Facades\Auth;
 use Flash;
+use Illuminate\Support\Facades\Hash;
+// use Laracasts\Flash\Flash as FlashFlash;
+use Spatie\Activitylog\Facades\Activity;
+use App\Models\Masyarakat;
+use Yajra\DataTables\Facades\DataTables;
 
 class MasyarakatController extends AppBaseController
 {
@@ -58,7 +65,20 @@ class MasyarakatController extends AppBaseController
     {
         $input = $request->all();
 
+        if (isset($input['nik'])){
+            $input['nik'] = Hash('sha256', $input['nik']);
+        }
+
         $masyarakat = $this->masyarakatRepository->create($input);
+
+        // $this->createActivityLog("Membuat data masyarakat dengan ID {$masyarakat->id}", $masyarakat);
+
+        if ($masyarakat && auth()->user()->hasRole(['admin', 'psikolog'])) {
+            activity()
+              ->causedBy(auth()->user())
+              ->performedOn($masyarakat)
+              ->log('Menambahkan data masyarakat: ' . $masyarakat->nama);
+}
 
         Flash::success('Masyarakat saved successfully.');
 
@@ -110,7 +130,19 @@ class MasyarakatController extends AppBaseController
             return redirect(route('masyarakats.index'));
         }
 
+        if (isset($input['nik'])){
+            $input['nik'] = Hash('sha256', $input['nik']);
+        }
+
         $masyarakat = $this->masyarakatRepository->update($request->all(), $id);
+
+        // $this->createActivityLog("Memperbarui data masyarakat dengan ID {$id}", $masyarakat);
+
+        if (in_array($this->user->roles->first()->name, ['admin', 'psikolog'])) {
+        Activity::causedBy($this->user)
+          ->performedOn($masyarakat)
+          ->log('Memperbarui data masyarakat: ' . $masyarakat->nama);
+        }
 
         Flash::success('Masyarakat updated successfully.');
 
@@ -134,8 +166,31 @@ class MasyarakatController extends AppBaseController
 
         $this->masyarakatRepository->delete($id);
 
+        // $this->createActivityLog("Menghapus data masyarakat dengan ID {$id}");
+
+        if (in_array($this->user->roles->first()->name, ['admin', 'psikolog'])) {
+        Activity::causedBy($this->user)
+          ->performedOn($masyarakat)
+          ->log('Menghapus data masyarakat: ' . $masyarakat->nama);
+        }
+
         Flash::success('Masyarakat deleted successfully.');
 
         return redirect(route('masyarakats.index'));
+    }
+
+    protected function createActivityLog($description, $subject = null) {
+        $user =Auth::user();
+
+        Log::create([
+            'log_name' => 'activity',
+            'description' => $description,
+            'subject_type' => $subject ? get_class($subject) : null,
+            'subject_id' => $subject ? $subject->id : null,
+            'causer_type' => get_class($user),
+            'causer_id' => $user->id,
+            'properties' => json_encode(['ip' => request()->ip()]),
+            'event' => 'activity',
+        ]);
     }
 }

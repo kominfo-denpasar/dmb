@@ -1,4 +1,24 @@
+@php
+    $user = Auth::user();
+    $defaultPhoto = asset('img/pp_user.jpg');
+    $photoUrl = $defaultPhoto;
+
+    if ($user->role === 'psikolog' && $user->psikolog && $user->psikolog->foto) {
+        $path = 'uploads/psikolog/' . $user->psikolog->foto;
+        if (\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            $photoUrl = asset('storage/' . $path);
+        }
+    }
+@endphp
+
+{{-- Optional untuk debug --}}
+{{-- <div>Path: {{ $path }}</div>
+<div>Exists: {{ $fileExists ? 'Yes' : 'No' }}</div> --}}
+
 <x-laravel-ui-adminlte::adminlte-layout>
+    <!-- @push('head')
+        @stack('third_party_stylesheets') {{-- Tambahkan CSS di HEAD --}}
+    @endpush -->
     <body class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper">
             <!-- Main Header -->
@@ -14,14 +34,23 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown user-menu">
                         <a href="#!" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                            <img src="{{ asset('img/pp_user.jpg') }}"
-                                class="user-image img-circle elevation-2" alt="User Image">
+                            @if(Auth::user()->psikolog_id && isset($psikolog) && $psikolog->foto)
+                                <img class="user-image img-circle elevation-2" alt="User Image"
+                                    src="{{ asset('storage/uploads/psikolog/' . $psikolog->foto) }}" 
+                                    alt="Foto Psikolog">
+                            @else
+                                <img class="user-image img-circle elevation-2" alt="User Image" 
+                                    src="{{ asset('img/pp_user.jpg') }}" 
+                                    alt="Foto Default User">
+                            @endif
+                            {{-- <img src="{{ $photoUrl }}"
+                                class="user-image img-circle elevation-2" alt="User Image"> --}}
                             <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                             <!-- User image -->
                             <li class="user-header bg-primary">
-                                <img src="{{ asset('img/pp_user.jpg') }}"
+                                <img src="{{ $photoUrl }}"
                                     class="img-circle elevation-2" alt="User Image">
                                 <p>
                                     {{ Auth::user()->name }}
@@ -49,6 +78,25 @@
 
             <!-- Content Wrapper. Contains page content -->
             <div class="content-wrapper py-4 px-2">
+                 <!-- Dynamic Page Header -->
+                <section class="content-header">
+                    <div class="container-fluid">
+                        <div class="row mb-2">
+                            <div class="col-sm-6">
+                                <h1>@yield('page-title', 'Default Title')</h1>
+                            </div>
+                            <div class="col-sm-6">
+                                <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
+                                @yield('breadcrumb')
+                                </ol>
+                            </div>
+                        </div>
+                    </div><!-- /.container-fluid -->
+                </section>
+
+
+
                 @yield('content')
             </div>
 

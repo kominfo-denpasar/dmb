@@ -1,17 +1,11 @@
 @extends('layouts.app')
+@section('page-title', 'Edit Evaluasis')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('evaluasis.index') }}">Evaluasis</a></li>
+    <li class="breadcrumb-item active">Edit Evaluasis</li>
+@endsection
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1>
-                        Edit Evaluasi
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
 
