@@ -18,7 +18,17 @@ class MasalahDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', 'masalahs.datatables_actions');
+        return $dataTable->addColumn('action', 'masalahs.datatables_actions')
+        ->editColumn('status', function ($sql) {
+            if ($sql->status == 0) {
+                return "<span class='badge bg-danger'> Tidak Aktif </span>";
+            } elseif ($sql->status == 1) {
+                return "<span class='badge bg-success'> Aktif </span>";
+            } else {
+                return "-";
+            }
+        })
+        ->rawColumns(['status', 'action']);
     }
 
     /**
