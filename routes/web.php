@@ -59,12 +59,19 @@ Route::group([
     Route::prefix('admin')->group(function () {
 
         Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profil'])->name('backend.profil');
+        Route::patch('/profil/update/{id}', [App\Http\Controllers\HomeController::class, 'updateProfil'])->name('backend.update-profil');
+        Route::patch('/profil/admin/{id}', [App\Http\Controllers\HomeController::class, 'updateProfilAdmin'])->name('backend.update-profil-admin');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+        // dashboard
+        Route::get('/dashboard/data', [App\Http\Controllers\HomeController::class, 'data']);
 
         Route::prefix('home-psikolog')->group(function () {
             Route::get('/', [App\Http\Controllers\HomePsikologController::class, 'index'])->name('home-psikolog');
             Route::get('/konseling/{id}', [App\Http\Controllers\HomePsikologController::class, 'konseling'])->name('backend.konseling');
             Route::get('/konseling/{id}/laporan-detail', [App\Http\Controllers\HomePsikologController::class, 'laporanDetail'])->name('backend.laporan-detail');
+            Route::get('/konseling/{id}/pdf', [App\Http\Controllers\HomePsikologController::class, 'printPdf'])->name('konseling.pdf');
+
             Route::get('/konseling/evaluasi/{id}', [App\Http\Controllers\HomePsikologController::class, 'formEvaluasi'])->name('backend.evaluasi');
 
             Route::get('/konseling/batal/{id}', [App\Http\Controllers\HomePsikologController::class, 'batal'])->name('backend.konseling-batal');
@@ -80,6 +87,10 @@ Route::group([
         Route::prefix('master')->group(function () {
             Route::get('psikologs/json', [App\Http\Controllers\PsikologController::class, 'indexJson'])->name('backend.psikolog-json');
             Route::get('psikologs/keluhan-json/{id}', [App\Http\Controllers\PsikologController::class, 'keluhanJson'])->name('backend.psikolog-keluhan-json');
+            Route::get('konselings/masyarakat-json/{mas_id}', [App\Http\Controllers\KonselingController::class, 'masyarakatJson'])->name('backend.masyarakat-json');
+
+            Route::get('/konseling/details/{id}', [App\Http\Controllers\KonselingController::class, 'konselingDetails'])->name('konseling.details');
+            
             Route::resource('psikologs', App\Http\Controllers\PsikologController::class);
             Route::resource('masyarakats', App\Http\Controllers\MasyarakatController::class);
             Route::resource('dassPertanyaans', App\Http\Controllers\dassPertanyaanController::class);
@@ -88,6 +99,7 @@ Route::group([
             Route::resource('masalahs', App\Http\Controllers\MasalahController::class);
             Route::resource('konselings', App\Http\Controllers\KonselingController::class);
             Route::resource('konseling-masalahs', App\Http\Controllers\KonselingMasalahController::class);
+
         });
 
         Route::prefix('data')->group(function () {
@@ -111,4 +123,4 @@ Route::get('/notif', [App\Http\Controllers\FrontController::class, 'testNotif'])
 
 
 
-Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');
+// Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');

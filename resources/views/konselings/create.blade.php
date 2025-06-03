@@ -1,17 +1,11 @@
 @extends('layouts.app')
+@section('page-title', 'Tambah Konselings')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('konselings.index') }}">Konselings</a></li>
+    <li class="breadcrumb-item active">Tambah Konselings</li>
+@endsection
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1>
-                    Create Konselings
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
 

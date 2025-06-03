@@ -1,22 +1,9 @@
 @extends('layouts.app')
-
+@section('page-title', 'Data Psikolog')
+@section('breadcrumb')
+    <li class="breadcrumb-item active">Psikolog</li>
+@endsection
 @section('content')
-		<section class="content-header">
-				<div class="container-fluid">
-						<div class="row mb-2">
-						<div class="col-sm-6">
-								<h1>Data Psikolog</h1>
-						</div>
-						<div class="col-sm-6">
-								<ol class="breadcrumb float-sm-right">
-								<li class="breadcrumb-item"><a href="{{ route('home') }}">Dashboard</a></li>
-								<li class="breadcrumb-item active">Data Psikolog</li>
-								</ol>
-						</div>
-						</div>
-				</div><!-- /.container-fluid -->
-		</section>
-
 		<div class="content px-3">
 
 				@include('flash::message')
@@ -38,22 +25,26 @@
 							</div>
 						</div>
 						<div class="card-body p-0">
+							@php
+								$currentStatus = request('status');
+							@endphp
 							<ul class="nav nav-pills flex-column">
-								<li class="nav-item active">
-									<a href="#" class="nav-link">
+								<li class="nav-item {{ $currentStatus === '1' ? 'active' : '' }}">
+									<a href="{{ $currentStatus === '1' ? route('psikologs.index') : route('psikologs.index', ['status' => '1']) }}" class="nav-link">
 										<i class="fas fa-filter"></i> Aktif
-										<span class="badge bg-success float-right">-</span>
+       		 							<span class="badge bg-success float-right">{{ \App\Models\Psikolog::where('status', '1')->count() }}</span>
 									</a>
 								</li>
-								<li class="nav-item">
-									<a href="#" class="nav-link">
+								<li class="nav-item {{ request('status') == '0' ? 'active' : '' }}">
+									<a href="{{ $currentStatus === '0' ? route('psikologs.index') : route('psikologs.index', ['status' => '0']) }}" class="nav-link">
 										<i class="fas fa-filter"></i> Tidak Aktif
-										<span class="badge bg-danger float-right">-</span>
+										<span class="badge bg-danger float-right">{{ \App\Models\Psikolog::where('status', '0')->count() }}</span>
 									</a>
 								</li>
-								<li class="nav-item">
-									<a href="#" class="nav-link">
+								<li class="nav-item {{ request('status') == 'arsip' ? 'active' : '' }}">
+									<a href="{{ $currentStatus === 'arsip' ? route('psikologs.index') : route('psikologs.index', ['status' => 'arsip']) }}" class="nav-link">
 										<i class="far fa-trash-alt"></i> Arsip
+										<span class="badge bg-secondary float-right">{{ \App\Models\Psikolog::where('status', '2')->count() }}</span>
 									</a>
 								</li>
 							</ul>
@@ -72,33 +63,44 @@
 							</div>
 						</div>
 						<div class="card-body p-0">
-							<ul class="nav nav-pills flex-column">
+							@php
+								$currentKec = request('kec');
+							@endphp
+							<ul class="nav nav-pills flex-column" id="wilayah_filter">
 								<li class="nav-item">
-								<a class="nav-link">
-									<i class="far fa-circle text-danger"></i>
-									Denpasar Timur
-									<span class="badge bg-secondary float-right">0</span>
-								</a>
+									<a class="nav-link {{ $currentKec === '5171020' ? 'active' : '' }}" 
+        							href="{{ $currentKec === '5171020' ? route('psikologs.index') : route('psikologs.index', ['kec' => '5171020']) }}" 
+           							data-kec="5171020">
+										<i class="far fa-circle text-danger"></i>
+										Denpasar Timur
+										<span class="badge bg-secondary float-right">{{ $counts['5171020'] ?? 0 }}</span>
+									</a>
 								</li>
 								<li class="nav-item">
-								<a class="nav-link">
-									<i class="far fa-circle text-warning"></i> Denpasar Barat
-									<span class="badge bg-secondary float-right">0</span>
-								</a>
+									<a class="nav-link {{ $currentKec === '5171030' ? 'active' : '' }}" 
+									href="{{ $currentKec === '5171030' ? route('psikologs.index') : route('psikologs.index', ['kec' => '5171030']) }}" 
+									data-kec="5171030">
+										<i class="far fa-circle text-warning"></i> Denpasar Barat
+										<span class="badge bg-secondary float-right">{{ $counts['5171030'] ?? 0 }}</span>
+									</a>
 								</li>
 								<li class="nav-item">
-								<a class="nav-link">
-									<i class="far fa-circle text-primary"></i>
-									Denpasar Selatan
-									<span class="badge bg-secondary float-right">0</span>
-								</a>
+									<a class="nav-link {{ $currentKec === '5171010' ? 'active' : '' }}" 
+									href="{{ $currentKec === '5171010' ? route('psikologs.index') : route('psikologs.index', ['kec' => '5171010']) }}" 
+									data-kec="5171010">
+										<i class="far fa-circle text-primary"></i>
+										Denpasar Selatan
+										<span class="badge bg-secondary float-right">{{ $counts['5171010'] ?? 0 }}</span>
+									</a>
 								</li>
 								<li class="nav-item">
-								<a class="nav-link">
-									<i class="far fa-circle text-primary"></i>
-									Denpasar Utara
-									<span class="badge bg-secondary float-right">0</span>
-								</a>
+									<a class="nav-link {{ $currentKec === '5171031' ? 'active' : '' }}" 
+									href="{{ $currentKec === '5171031' ? route('psikologs.index') : route('psikologs.index', ['kec' => '5171031']) }}" 
+									data-kec="5171031">
+										<i class="far fa-circle text-primary"></i>
+										Denpasar Utara
+										<span class="badge bg-secondary float-right">{{ $counts['5171031'] ?? 0 }}</span>
+									</a>
 								</li>
 							</ul>
 						</div>

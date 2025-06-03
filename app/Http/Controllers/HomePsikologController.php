@@ -13,7 +13,9 @@ use App\Models\KonselingMasalah;
 use App\Models\Evaluasi;
 
 use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\PhpMailController;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class HomePsikologController extends Controller
 {
@@ -81,7 +83,7 @@ class HomePsikologController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
-	public function konseling($id)
+	public function konseling($id) 
 	{
 		// ambil data keluhan, konseling, dass dan detail masyarakat/klien
 		$data = Masyarakat::where('keluhans.id', $id)
@@ -89,7 +91,6 @@ class HomePsikologController extends Controller
 			->join('konselings', 'masyarakats.token', '=', 'konselings.mas_id')
 			->join('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
 			->join('dasshasils', 'masyarakats.token', '=', 'dasshasils.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->select(
 				'masyarakats.nama',
 				'masyarakats.nik',
@@ -101,12 +102,11 @@ class HomePsikologController extends Controller
 				'masyarakats.token', 
 				'keluhans.*',
 				'keluhans.id as keluhan_id', 
+				'keluhans.jadwal_jam as jamnya',
 				'konselings.id as konseling_id',
 				'psikologs.nama as psikolog_nama',
 				'psikologs.id as psikolog_id', 
-				'dasshasils.*',
-				'jadwals.hari',
-				'jadwals.jam as jamnya',
+				'dasshasils.*'
 			)
 			->first();
 		
@@ -204,7 +204,6 @@ class HomePsikologController extends Controller
 			->join('konselings', 'masyarakats.token', '=', 'konselings.mas_id')
 			->join('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
 			->join('dasshasils', 'masyarakats.token', '=', 'dasshasils.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->select(
 				'masyarakats.nama',
 				'masyarakats.nik',
@@ -218,16 +217,19 @@ class HomePsikologController extends Controller
 				'masyarakats.token',
 				'keluhans.id as keluhan_id',
 				'keluhans.keluhan', 
+				'keluhans.jadwal_jam as jamnya',
 				'keluhans.jadwal_alt2_tgl as tanggalnya', 
 				'konselings.id as konseling_id',
 				'psikologs.nama as psikolog_nama',
 				'psikologs.sipp',
 				'psikologs.id as psikolog_id', 
 				'psikologs.ttd',
-				'dasshasils.*',
-				'jadwals.hari',
-				'jadwals.jam as jamnya',
+				'dasshasils.*'
 			)
+			->where([
+				'keluhans.status' => 2, // hanya ambil data keluhan yang sudah selesai
+				'konselings.status' => 2 // hanya ambil data konseling yang sudah selesai
+			])
 			->first();
 		
 		// dd($data);
@@ -277,8 +279,12 @@ class HomePsikologController extends Controller
 			'phone' => '0'.$masyarakat->hp,
 			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', $id)."\n\nSalam, Denpasar Menyama Bagia"
 		];
-
 		$this->notif_wa($data);
+
+		// Kirim email
+		$mailController = new PhpMailController();
+		$mailController->kirimEvaluasi($masyarakat);
+
 		return redirect()->route('home-psikolog')->with('message', 'Berhasil mengirimkan formulir evaluasi ke masyarakat');
 	}
 
@@ -425,6 +431,7 @@ class HomePsikologController extends Controller
 			'kesimpulan' => $request->kesimpulan,
 			'saran' => $request->saran,
 			'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+			'keluhan_id' => $request->keluhan_id,
 			'status' => 2,
 			'updated_at' => Carbon::now()
 		]);
@@ -481,8 +488,9 @@ class HomePsikologController extends Controller
 			$month_folder = $year_folder . '/' . date("m");
 
 			$old_berkas_pendukung = Konseling::where('id', $request->konseling_id)->first();
-			if($old_berkas_pendukung->berkas_pendukung) {
-				unlink(storage_path('app/public/uploads/berkas_pendukung/'.$old_berkas_pendukung->berkas_pendukung));
+			$filePath = storage_path('app/public/uploads/berkas_pendukung/'.$old_berkas_pendukung->berkas_pendukung);
+			if(file_exists($filePath) && $old_berkas_pendukung->berkas_pendukung) {
+				unlink($filePath);
 			}
 			
 			// simpan file berkas pendukung menggunakan storage
@@ -503,6 +511,7 @@ class HomePsikologController extends Controller
 				'kesimpulan' => $request->kesimpulan,
 				'saran' => $request->saran,
 				'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+				'keluhan_id' => $request->keluhan_id,
 				'status' => 2,
 				'updated_at' => Carbon::now()
 			]);
@@ -513,6 +522,7 @@ class HomePsikologController extends Controller
 			])->update([
 				'hasil' => $request->hasil,
 				'kesimpulan' => $request->kesimpulan,
+				'keluhan_id' => $request->keluhan_id,
 				'saran' => $request->saran,
 				'status' => 2,
 				'updated_at' => Carbon::now()
@@ -579,8 +589,12 @@ class HomePsikologController extends Controller
 				'phone' => '0'.$masyarakat->hp,
 				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal $keluhan->jadwal_alt2_tgl jam $keluhan->jadwal_alt2_jam telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
 			];
-
 			$this->notif_wa($data);
+
+			// Kirim email
+			$mailController = new PhpMailController();
+			$mailController->BatalKonseling($masyarakat,$keluhan);
+
 
 			// redirect ke halaman konseling
 			return redirect()->route('backend.konseling', $id)->with('success', 'Berhasil melakukan pembatalan konseling');
@@ -637,10 +651,82 @@ class HomePsikologController extends Controller
 		];
 		$this->notif_wa($data);
 
+		// Kirim email
+		$mailController = new PhpMailController();
+		$mailController->RescheduleKonseling($masyarakat);
+
 		if($keluhan && $konseling) {
 			return redirect()->route('backend.konseling', $request->keluhan_id)->with('success', 'Berhasil melakukan reschedule konseling');
 		} else {
 			return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal melakukan reschedule konseling');
 		}
+	}
+
+	public function printPdf($id)
+	{
+		// ambil data keluhan, konseling, dass dan detail masyarakat/klien
+		$data = Masyarakat::where('keluhans.id', $id)
+			->join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
+			->join('konselings', 'masyarakats.token', '=', 'konselings.mas_id')
+			->join('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
+			->join('dasshasils', 'masyarakats.token', '=', 'dasshasils.mas_id')
+			->select(
+				'masyarakats.nama',
+				'masyarakats.nik',
+				'masyarakats.jk',
+				'masyarakats.tgl_lahir',
+				'masyarakats.hp',
+				'masyarakats.pekerjaan',
+				'masyarakats.pendidikan',
+				'masyarakats.kec_id',
+				'masyarakats.alamat', 
+				'masyarakats.token',
+				'keluhans.id as keluhan_id',
+				'keluhans.keluhan', 
+				'keluhans.jadwal_jam as jamnya',
+				'keluhans.jadwal_alt2_tgl as tanggalnya', 
+				'konselings.id as konseling_id',
+				'psikologs.nama as psikolog_nama',
+				'psikologs.sipp',
+				'psikologs.id as psikolog_id', 
+				'psikologs.ttd',
+				'dasshasils.*'
+			)
+			->where([
+				'keluhans.status' => 2, // hanya ambil data keluhan yang sudah selesai
+				'konselings.status' => 2 // hanya ambil data konseling yang sudah selesai
+			])
+			->first();
+		
+		// dd($data);
+
+		// get data konseling
+		$konseling = Konseling::where('id', $data->konseling_id)
+		->select(
+			'hasil',
+			'kesimpulan',
+			'saran',
+			'berkas_pendukung', 
+		)
+		->first();
+
+		// get data masalah
+		$masalah = Masalah::get();
+
+		// get data konseling masalah
+		$konseling_masalah = KonselingMasalah::where('konseling_id', $data->konseling_id)->get();
+		$konseling_masalah = $konseling_masalah->map(function($item) {
+			return $item->masalah_id;
+		})->toArray();
+
+		// dd($konseling_masalah);
+
+		$tanggal = Carbon::now()->translatedFormat('d-m-Y');
+		$string = $data->nama;
+		$new_string = str_replace(" ", "-", $string); // Replace spaces with dashes
+
+		$pdf = PDF::loadView('backend/pdf', compact('data', 'masalah', 'konseling', 'konseling_masalah'));
+		$pdf->set_option('isRemoteEnabled', true);
+		return $pdf->download('laporan-konseling-'.$tanggal.'_'.$new_string.'.pdf');
 	}
 }

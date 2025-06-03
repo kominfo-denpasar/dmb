@@ -21,4 +21,7 @@
     -mt-32 {
         margin-top: 8rem;
     }
+    ul.shadow > li {
+        list-style: none;
+    }
 }

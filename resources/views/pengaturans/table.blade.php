@@ -2,29 +2,30 @@
     <div class="table-responsive">
         <table class="table" id="pengaturans-table">
             <thead>
-            <tr>
-                <th>Nama<th>
-                <th colspan="3">Action</th>
-            </tr>
+                <tr>
+                    <th>Nama<th>
+                </tr>
             </thead>
             <tbody>
             @foreach($pengaturans as $pengaturan)
                 <tr>
-                    <td>{{ $pengaturan->slug }}</td>
-                    <td  style="width: 120px">
-                        {!! Form::open(['route' => ['pengaturans.destroy', $pengaturan->id], 'method' => 'delete']) !!}
+                    <td colspan="2">
                         <div class='btn-group'>
-                            <a href="{{ route('pengaturans.show', [$pengaturan->id]) }}"
+                            <!-- <a href="{{ route('pengaturans.show', [$pengaturan->id]) }}"
                                class='btn btn-default btn-xs'>
                                 <i class="far fa-eye"></i>
-                            </a>
+                            </a> -->
                             <a href="{{ route('pengaturans.edit', [$pengaturan->id]) }}"
-                               class='btn btn-default btn-xs'>
+                               class='btn btn-default btn-sm'>
                                 <i class="far fa-edit"></i>
                             </a>
-                            {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
+                            
                         </div>
-                        {!! Form::close() !!}
+                        <b>  - {{ $pengaturan->slug }}<b>
+                        
+                    </td>
+                    <td>
+                        
                     </td>
                 </tr>
             @endforeach

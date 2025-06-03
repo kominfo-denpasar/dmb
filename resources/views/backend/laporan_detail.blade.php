@@ -1,22 +1,10 @@
 @extends('layouts.app')
-
+@section('page-title', 'Laporan Detail Konseling')
+@section('breadcrumb')
+	<li class="breadcrumb-item"><a href="{{route('backend.konseling', $data->keluhan_id)}}">Detail Konseling</a></li>
+    <li class="breadcrumb-item active">Laporan Detail Konseling</li>
+@endsection
 @section('content') 
-	<section class="content-header">
-		<div class="container-fluid">
-		<div class="row mb-2">
-			<div class="col-sm-6">
-			<h1>Laporan Detail Konseling</h1>
-			</div>
-			<div class="col-sm-6">
-			<ol class="breadcrumb float-sm-right">
-				<li class="breadcrumb-item"><a href="{{route('home')}}">Dashboard Psikolog</a></li>
-				<li class="breadcrumb-item"><a href="{{route('backend.konseling', $data->keluhan_id)}}">Detail Konseling</a></li>
-				<li class="breadcrumb-item active">Laporan Detail Konseling</li>
-			</ol>
-			</div>
-		</div>
-		</div><!-- /.container-fluid -->
-	</section>
 
 	<section class="content">
 		<div class="container-fluid">
@@ -26,8 +14,20 @@
 						<h5><i class="fas fa-info"></i> Perhatian:</h5>
 						Berikut adalah laporan detail konseling. Gunakan tombol export di bawah untuk mendownload dalam format PDF.
 					</div>
+					
 				</div>
 				<!-- .col-12 -->
+
+				<div class="offset-2 col-8">
+					<div class="invoice p-4 mb-4">
+						<!-- title row -->
+						<div class="row no-print">
+							<a target="_BLANK" href="{{ route('konseling.pdf', $data->keluhan_id) }}" type="button" class="btn btn-secondary float-right" style="margin-right: 5px;">
+								<i class="fas fa-download"></i> PDF
+							</a>
+						</div>
+					</div>
+				</div>
 
 				<div class="offset-2 col-8">
 					<!-- Main content -->
@@ -37,7 +37,7 @@
 						<div class="col-12">
 						<h4>
 							<i class="fas fa-globe"></i> Psychological Record.
-							<small class="float-right">Tanggal: {{ \Carbon\Carbon::parse($data->tanggalnya)->format('d/m/Y')}}</small>
+							<small class="float-right">Tanggal Konsul: {{ \Carbon\Carbon::parse($data->tanggalnya)->format('d/m/Y')}}</small>
 						</h4>
 						</div>
 						<!-- /.col -->
@@ -52,7 +52,7 @@
 							Tanggal Lahir/Usia<br>
 							Pendidikan Terakhir<br>
 							Pekerjaan<br>
-							Kecamatan<br></strong>	
+							Alamat<br></strong>	
 						</address>
 						</div>
 						<!-- /.col -->
@@ -224,7 +224,14 @@
 								<tbody>
 									<tr>
 										<td>
-											<img class="img-fluid" src="{{ asset('uploads/berkas_pendukung/'.$konseling->berkas_pendukung)}}" alt="Dokumentasi">
+											@if($konseling && $konseling->berkas_pendukung)
+												<!-- cek apakah file ada di folder -->
+												@if(file_exists(storage_path('app/public/uploads/berkas_pendukung/'.$konseling->berkas_pendukung)))
+													<img class="img-fluid col-6" src="{{asset('storage/uploads/berkas_pendukung/'.$konseling->berkas_pendukung)}}" style="height:20%">
+												@else
+													<img class="img-fluid col-6" src="{{asset('img/pp_user.jpg')}}" style="height:20%">
+												@endif
+											@endif
 										</td>
 									</tr>
 								</tbody>
@@ -257,15 +264,16 @@
 					</div>
 					<!-- /.row -->
 
-					<!-- this row will not appear when printing -->
-					<div class="row no-print">
-						<div class="col-12">
-							<a href="{{url('admin/home-psikologi/print')}}" rel="noopener" target="_blank" class="btn btn-default float-right"><i class="fas fa-print"></i> Print</a>
-							<button type="button" class="btn btn-secondary float-right" style="margin-right: 5px;">
-								<i class="fas fa-download"></i> PDF
-							</button>
+						<!-- this row will not appear when printing -->
+						<div class="row no-print">
+
+							<div class="col-12">
+								<hr>
+								<a target="_BLANK" href="{{ route('konseling.pdf', $data->keluhan_id) }}" type="button" class="btn btn-secondary" style="margin-right: 5px;">
+									<i class="fas fa-download"></i> PDF
+								</a>
+							</div>
 						</div>
-					</div>
 					</div>
 					<!-- /.invoice -->
 				</div><!-- /.col -->
@@ -273,3 +281,20 @@
 		</div><!-- /.container-fluid -->
 	</section>
 @endsection
+@push('scripts')
+<script>
+function printLaporan() {
+    let content = document.getElementById("laporan-konseling").innerHTML;
+    let printWindow = window.open('', '', 'height=800,width=1000');
+    printWindow.document.write('<html><head><title>Cetak Laporan Konseling</title>');
+    printWindow.document.write('<link rel="stylesheet" href="{{ asset("css/app.css") }}">'); // opsional
+    printWindow.document.write('</head><body >');
+    printWindow.document.write(content);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+</script>
+@endpush

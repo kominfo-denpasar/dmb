@@ -66,39 +66,58 @@
 									</thead> -->
 									<tbody>
 										<tr>
-											<td data-label="Kolom" class="text-right">NIK</td>
-											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->nik}}</td>
-										</tr>
-										<tr>
 											<td data-label="Kolom" class="text-right">Nama</td>
+											<td class="text-center" style="width:5%">:</td>
 											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->nama}}</td>
 										</tr>
 										<tr>
 											<td data-label="Kolom" class="text-right">Nomor HP</td>
+											<td class="text-center">:</td>
 											<td data-label="Deskripsi" class="font-bold">0{{$masyarakat->hp}}</td>
 										</tr>
 										<tr>
 											<td data-label="Kolom" class="text-right">Keluhan</td>
+											<td class="text-center">:</td>
 											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->keluhan}}</td>
 										</tr>
 										<tr>
-											<td data-label="Kolom" class="text-right">Hari Konseling</td>
-											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->hari}}</td>
+											<td colspan="3" class="text-center">
+												<p>---</p>
+											</td>
 										</tr>
 										<tr>
-											<td data-label="Kolom" class="text-right">Jam Konseling</td>
-											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->jam}} WITA</td>
+											<td data-label="Kolom" class="text-right">Tanggal</td>
+											<td class="text-center">:</td>
+											<td data-label="Deskripsi" class="font-bold">{{ \Carbon\Carbon::parse($masyarakat->jadwal_tgl)->format('d/m/Y')}}</td>
+										</tr>
+										<!-- <tr>
+											<td data-label="Kolom" class="text-right">Hari Konseling</td>
+											<td class="text-center">:</td>
+											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->hari}}</td>
+										</tr> -->
+										<tr>
+											<td data-label="Kolom" class="text-right">Jam</td>
+											<td class="text-center">:</td>
+											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->jadwal_jam}} WITA</td>
+										</tr>
+										<tr>
+											<td colspan="3" class="text-center">
+												<p>---</p>
+											</td>
 										</tr>
 										<tr>
 											<td data-label="Kolom" class="text-right">Psikolog</td>
+											<td class="text-center">:</td>
 											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->psikolog}}</td>
 										</tr>
 										<tr>
-											<td data-label="Kolom" class="text-right">Kontak Psikolog</td>
-											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->psikolog_hp}}</td>
+											<td data-label="Kolom" class="text-right">Kontak</td>
+											<td class="text-center">:</td>
+											<td data-label="Deskripsi" class="font-bold">(+62) {{$masyarakat->psikolog_hp}}</td>
 										</tr>
 										<tr>
-											<td data-label="Kolom" class="text-right">Alamat Psikolog</td>
+											<td data-label="Kolom" class="text-right">Alamat</td>
+											<td class="text-center">:</td>
 											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->alamat_praktek}}</td>
 										</tr>
 									</tbody>
@@ -121,9 +140,7 @@
 						</summary>
 
 						<article class="px-4 pb-4">
-							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ipsum sapien. Vestibulum molestie
-								porttitor augue vitae vulputate. Aliquam nec ex maximus, suscipit diam vel, tristique tellus. </p>
+							<p>{!!$selanjutnya->value!!}</p>
 						</article>
 					</details>
 				</li>
@@ -141,8 +158,7 @@
 
 						<article class="px-4 pb-4">
 							<p>
-								Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed et ipsum sapien. Vestibulum molestie
-								porttitor augue vitae vulputate. Aliquam nec ex maximus, suscipit diam vel, tristique tellus. </p>
+								{!!$jika_lewat->value!!} </p>
 						</article>
 					</details>
 				</li>

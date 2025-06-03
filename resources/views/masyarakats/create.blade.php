@@ -1,12 +1,15 @@
 @extends('layouts.app')
-
+@section('page-title', 'Tambah Data Masyarakats')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('masyarakats.index') }}">Data Masyarakats</a></li>
+    <li class="breadcrumb-item active">Tambah Data</li>
+@endsection
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
             <div class="row mb-2">
                 <div class="col-sm-12">
                     <h1>
-                    Create Masyarakats
                     </h1>
                 </div>
             </div>
