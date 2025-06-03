@@ -16,15 +16,11 @@
                     <td  style="width: 120px">
                         {!! Form::open(['route' => ['blog-kategoris.destroy', $blogKategori->id], 'method' => 'delete']) !!}
                         <div class='btn-group'>
-                            <a href="{{ route('blog-kategoris.show', [$blogKategori->id]) }}"
-                               class='btn btn-default btn-xs'>
-                                <i class="far fa-eye"></i>
-                            </a>
                             <a href="{{ route('blog-kategoris.edit', [$blogKategori->id]) }}"
-                               class='btn btn-default btn-xs'>
+                               class='btn btn-default btn-sm'>
                                 <i class="far fa-edit"></i>
                             </a>
-                            {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-xs', 'onclick' => "return confirm('Are you sure?')"]) !!}
+                            {!! Form::button('<i class="far fa-trash-alt"></i>', ['type' => 'submit', 'class' => 'btn btn-danger btn-sm', 'onclick' => "return confirm('Are you sure?')"]) !!}
                         </div>
                         {!! Form::close() !!}
                     </td>

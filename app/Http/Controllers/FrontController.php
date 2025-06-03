@@ -739,7 +739,7 @@ class FrontController extends Controller
 	 */
 	public function formulirEvaluasi($id)
 	{
-		//ambil data join masyarakat, keluhan dan jadwal
+		//ambil data join masyarakat dan keluhan
 		$masyarakat = Masyarakat::join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
 			->join('psikologs', 'keluhans.psikolog_id', '=', 'psikologs.id')
 			->select(
@@ -752,19 +752,27 @@ class FrontController extends Controller
 				'psikologs.alamat_praktek',
 				'psikologs.hp as psikolog_hp')
 			->where([
-				'masyarakats.token' => $id,
-				'keluhans.status' => 1
+				'masyarakats.token' => $id
 			])
+			->where(function($query) {
+				$query->where('keluhans.status', 1)
+					->orWhere('keluhans.status', 2);
+			})
 			->first();
 
-		// cek jika sudah mengisi form evaluasi
-		$evaluasi = Evaluasi::where([
-			'mas_id' => $id,
-			'psikolog_id' => $masyarakat->psikolog_id,
-			'keluhan_id' => $masyarakat->keluhan_id
-		])->first();
-		
+		// dd($masyarakat);
 
+		if($masyarakat) {
+			// jika status konseling masih proses dan sudah selesai
+			$evaluasi = Evaluasi::where([
+				'mas_id' => $id,
+				'psikolog_id' => $masyarakat->psikolog_id,
+				'keluhan_id' => $masyarakat->keluhan_id
+			])->first();
+		} else {
+			return redirect()->route('front.survei-intro');
+		}
+		
 		// dd($masyarakat);
 
 		if($masyarakat && !$evaluasi) {

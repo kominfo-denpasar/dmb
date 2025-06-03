@@ -14,8 +14,20 @@
 						<h5><i class="fas fa-info"></i> Perhatian:</h5>
 						Berikut adalah laporan detail konseling. Gunakan tombol export di bawah untuk mendownload dalam format PDF.
 					</div>
+					
 				</div>
 				<!-- .col-12 -->
+
+				<div class="offset-2 col-8">
+					<div class="invoice p-4 mb-4">
+						<!-- title row -->
+						<div class="row no-print">
+							<a target="_BLANK" href="{{ route('konseling.pdf', $data->keluhan_id) }}" type="button" class="btn btn-secondary float-right" style="margin-right: 5px;">
+								<i class="fas fa-download"></i> PDF
+							</a>
+						</div>
+					</div>
+				</div>
 
 				<div class="offset-2 col-8">
 					<!-- Main content -->
@@ -252,15 +264,16 @@
 					</div>
 					<!-- /.row -->
 
-					<!-- this row will not appear when printing -->
-					<div class="row no-print">
-						<div class="col-12">
-							<a href="{{url('admin/home-psikologi/print')}}" rel="noopener" target="_blank" class="btn btn-default float-right"><i class="fas fa-print"></i> Print</a>
-							<button type="button" class="btn btn-secondary float-right" style="margin-right: 5px;">
-								<i class="fas fa-download"></i> PDF
-							</button>
+						<!-- this row will not appear when printing -->
+						<div class="row no-print">
+
+							<div class="col-12">
+								<hr>
+								<a target="_BLANK" href="{{ route('konseling.pdf', $data->keluhan_id) }}" type="button" class="btn btn-secondary" style="margin-right: 5px;">
+									<i class="fas fa-download"></i> PDF
+								</a>
+							</div>
 						</div>
-					</div>
 					</div>
 					<!-- /.invoice -->
 				</div><!-- /.col -->
@@ -268,3 +281,20 @@
 		</div><!-- /.container-fluid -->
 	</section>
 @endsection
+@push('scripts')
+<script>
+function printLaporan() {
+    let content = document.getElementById("laporan-konseling").innerHTML;
+    let printWindow = window.open('', '', 'height=800,width=1000');
+    printWindow.document.write('<html><head><title>Cetak Laporan Konseling</title>');
+    printWindow.document.write('<link rel="stylesheet" href="{{ asset("css/app.css") }}">'); // opsional
+    printWindow.document.write('</head><body >');
+    printWindow.document.write(content);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+}
+</script>
+@endpush

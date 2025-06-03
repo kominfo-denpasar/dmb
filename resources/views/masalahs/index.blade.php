@@ -12,7 +12,7 @@
                 <div class="col-sm-6">
                     <a class="btn btn-primary float-right"
                        href="{{ route('masalahs.create') }}">
-                        Add New
+                        Tambah Baru
                     </a>
                 </div>
             </div>
