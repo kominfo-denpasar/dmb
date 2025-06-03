@@ -1,5 +1,5 @@
 @extends('layouts.app')
-
+@section('page-title', 'Dashboard')
 @section('content') 
 <style>
 	.card-title {

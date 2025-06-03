@@ -8,6 +8,7 @@ use App\Http\Controllers\AppBaseController;
 use App\Repositories\PsikologRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 // use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Flash;
@@ -42,12 +43,42 @@ class PsikologController extends AppBaseController
 	 * Display a listing of the Psikolog.
 	 */
 	public function index(Request $request)
-	{
-		$psikologs = $this->psikologRepository->paginate(10);
+{
+    if ($request->ajax()) {
+        $data = Psikolog::query();
 
-		return view('psikologs.index')
-			->with('psikologs', $psikologs);
-	}
+        if ($request->has('status') && $request->status != '') {
+            if ($request->status == 'arsip') {
+                $data->where('status', 2);
+            } else {
+                $data->where('status', $request->status);
+            }
+        }
+
+        return datatables()->of($data->get())
+            ->addColumn('aksi', function ($row) {
+                return '<a href="' . route('psikologs.edit', $row->id) . '" class="btn btn-sm btn-primary">Edit</a>';
+            })
+            ->rawColumns(['aksi'])
+            ->make(true);
+    }
+    $statusFilter = $request->input('status', '');
+    $countsQuery = Psikolog::select('kec_id', DB::raw('count(*) as total'));
+
+//	// view data berdasarkan kategori (aktif/tidak aktif)
+    // if ($statusFilter != '') {
+    //     if ($statusFilter == 'arsip') {
+    //         $countsQuery->where('status', 2);
+    //     } else {
+    //         $countsQuery->where('status', $statusFilter);
+    //     }
+    // }
+    $counts = $countsQuery->groupBy('kec_id')->pluck('total', 'kec_id');
+
+    $psikologs = Psikolog::paginate(10);
+    return view('psikologs.index', compact('psikologs', 'counts'));
+}
+
 
 	/**
 	 * Show the form for creating a new Psikolog.
@@ -317,14 +348,26 @@ class PsikologController extends AppBaseController
      *
      * @throws \Exception
      */
-    public function indexJson() {
+    public function indexJson(Request $request) {
         $sql = Psikolog::select(
             'id',
             'nama',
             'hp',
 			'kec_id',
             'status'
-        )->get();
+        );
+
+		if ($request->has('status') && $request->status != '') {
+			if ($request->status == 'arsip') {
+				$sql->where('status', 2);
+			} else {
+				$sql->where('status', $request->status);
+			}
+		}
+
+		if ($request->has('kec_id') && $request->kec_id != '') {
+			$sql->where('kec_id', $request->kec_id);
+		}
 
         return Datatables::of($sql)
         ->addColumn('aksi', function($sql){
