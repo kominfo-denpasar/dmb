@@ -59,6 +59,8 @@ Route::group([
     Route::prefix('admin')->group(function () {
 
         Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profil'])->name('backend.profil');
+        Route::patch('/profil/update/{id}', [App\Http\Controllers\HomeController::class, 'updateProfil'])->name('backend.update-profil');
+        Route::patch('/profil/admin/{id}', [App\Http\Controllers\HomeController::class, 'updateProfilAdmin'])->name('backend.update-profil-admin');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
         // dashboard
@@ -121,4 +123,4 @@ Route::get('/notif', [App\Http\Controllers\FrontController::class, 'testNotif'])
 
 
 
-Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');
+// Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');

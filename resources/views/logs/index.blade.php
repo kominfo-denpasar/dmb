@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('page-title', 'Logs')
+@section('page-title', 'Catatan Log')
 @section('breadcrumb')
-    <li class="breadcrumb-item active">Logs</li>
+    <li class="breadcrumb-item active">Catatan Log</li>
 @endsection
 @section('content')
 

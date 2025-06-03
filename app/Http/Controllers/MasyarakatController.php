@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Hash;
 use Spatie\Activitylog\Facades\Activity;
 use App\Models\Masyarakat;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Hash;
+// use Laracasts\Flash\Flash as FlashFlash;
+use Spatie\Activitylog\Facades\Activity;
 
 class MasyarakatController extends AppBaseController
 {

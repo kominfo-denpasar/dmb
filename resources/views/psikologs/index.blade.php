@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('page-title', 'Data Psikologs')
+@section('page-title', 'Data Psikolog')
 @section('breadcrumb')
-    <li class="breadcrumb-item active">Psikologs</li>
+    <li class="breadcrumb-item active">Psikolog</li>
 @endsection
 @section('content')
 		<div class="content px-3">
