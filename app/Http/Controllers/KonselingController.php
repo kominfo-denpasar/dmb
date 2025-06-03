@@ -168,8 +168,8 @@ class KonselingController extends AppBaseController
                     ->leftJoin('psikologs', 'konselings.psikolog_id', '=', 'psikologs.id')
                     ->select(
                         'konselings.id',
-                        // 'konselings.created_at',
-                        'konselings.keluhan_id',
+                        'konselings.created_at',
+                        // 'konselings.keluhan_id',
                         'psikologs.nama',
                         'konselings.hasil',
                         'konselings.kesimpulan',
