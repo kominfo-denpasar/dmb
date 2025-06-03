@@ -1,17 +1,11 @@
 @extends('layouts.app')
+@section('page-title', 'Edit Konseling Masalahs')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('konseling-masalahs.index') }}">Konseling Masalahs</a></li>
+    <li class="breadcrumb-item active">Edit Konseling Masalahs</li>
+@endsection
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1>
-                        Edit Konseling Masalah
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
 
@@ -19,7 +13,7 @@
 
         <div class="card">
 
-            {!! Form::model($konselingMasalah, ['route' => ['konselingMasalahs.update', $konselingMasalah->id], 'method' => 'patch']) !!}
+            {!! Form::model($konselingMasalah, ['route' => ['konseling-masalahs.update', $konselingMasalah->id], 'method' => 'patch']) !!}
 
             <div class="card-body">
                 <div class="row">
@@ -29,7 +23,7 @@
 
             <div class="card-footer">
                 {!! Form::submit('Save', ['class' => 'btn btn-primary']) !!}
-                <a href="{{ route('konselingMasalahs.index') }}" class="btn btn-default"> Cancel </a>
+                <a href="{{ route('konseling-masalahs.index') }}" class="btn btn-default"> Cancel </a>
             </div>
 
             {!! Form::close() !!}

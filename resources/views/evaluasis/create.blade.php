@@ -1,5 +1,9 @@
 @extends('layouts.app')
-
+@section('page-title', 'Tambah Evaluasis')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('evaluasis.index') }}">Evaluasis</a></li>
+    <li class="breadcrumb-item active">Tambah Evaluasis</li>
+@endsection
 @section('content')
     <section class="content-header">
         <div class="container-fluid">

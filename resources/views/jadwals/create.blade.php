@@ -1,17 +1,11 @@
 @extends('layouts.app')
+@section('page-title', 'Tambah Data Jadwal')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('jadwals.index') }}">Data Jadwal Psikolog</a></li>
+    <li class="breadcrumb-item active">Tambah Data Jadwal</li>
+@endsection
 
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1>
-                    Tambah Data Jadwal
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
 

@@ -1,17 +1,10 @@
 @extends('layouts.app')
-
+@section('page-title', 'Tambah Blog Kategoris')
+@section('breadcrumb')
+    <li class="breadcrumb-item"><a href="{{ route('blog-kategoris.index') }}">Data Blog Kategoris</a></li>
+    <li class="breadcrumb-item active">Tambah Data</li>
+@endsection
 @section('content')
-    <section class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <h1>
-                    Create Blog Kategoris
-                    </h1>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <div class="content px-3">
 

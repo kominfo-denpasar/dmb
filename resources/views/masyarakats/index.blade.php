@@ -1,5 +1,8 @@
 @extends('layouts.app')
-
+@section('page-title', 'Data Masyarakats')
+@section('breadcrumb')
+    <li class="breadcrumb-item active"> Data Masyarakats</li>
+@endsection
 @section('content')
     <section class="content-header">
         <div class="container-fluid">
