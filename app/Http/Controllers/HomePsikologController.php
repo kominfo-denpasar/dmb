@@ -81,7 +81,7 @@ class HomePsikologController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
-	public function konseling($id)
+	public function konseling($id) 
 	{
 		// ambil data keluhan, konseling, dass dan detail masyarakat/klien
 		$data = Masyarakat::where('keluhans.id', $id)
@@ -425,6 +425,7 @@ class HomePsikologController extends Controller
 			'kesimpulan' => $request->kesimpulan,
 			'saran' => $request->saran,
 			'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+			'keluhan_id' => $request->keluhan_id,
 			'status' => 2,
 			'updated_at' => Carbon::now()
 		]);
@@ -504,6 +505,7 @@ class HomePsikologController extends Controller
 				'kesimpulan' => $request->kesimpulan,
 				'saran' => $request->saran,
 				'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+				'keluhan_id' => $request->keluhan_id,
 				'status' => 2,
 				'updated_at' => Carbon::now()
 			]);
@@ -514,6 +516,7 @@ class HomePsikologController extends Controller
 			])->update([
 				'hasil' => $request->hasil,
 				'kesimpulan' => $request->kesimpulan,
+				'keluhan_id' => $request->keluhan_id,
 				'saran' => $request->saran,
 				'status' => 2,
 				'updated_at' => Carbon::now()

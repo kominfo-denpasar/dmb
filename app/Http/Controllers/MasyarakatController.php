@@ -9,6 +9,8 @@ use App\Http\Controllers\AppBaseController;
 use App\Repositories\MasyarakatRepository;
 use Illuminate\Http\Request;
 use Flash;
+use App\Models\Masyarakat;
+use Yajra\DataTables\Facades\DataTables;
 
 class MasyarakatController extends AppBaseController
 {
