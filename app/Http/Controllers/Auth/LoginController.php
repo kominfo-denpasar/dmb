@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use GuzzleHttp\RetryMiddleware;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use \Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
+use \Spatie\Activitylog\facades\Activity;
 
 class LoginController extends Controller
 {
@@ -53,7 +56,28 @@ class LoginController extends Controller
             'h-captcha-response' => 'required|HCaptcha',
         ]);
     }
-
-
     
+    // override method yang dipanggil setelah user berhasil login
+    protected function authenticated(Request $request, $user) {
+        activity()
+        ->causedBy($user)
+        ->log('login ke sistem');
+
+        return redirect()->intended($this->redirectTo);
+    }
+
+    //override  method logout untuk mencatat log aktivitas logout
+    public function logout(Request $request) {
+        $user = auth()->user();
+        
+        activity()
+        ->causedBy($user)
+        ->log('Logout dari sistem');
+
+        $this->guard()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        
+        return redirect('/');
+    }
 }

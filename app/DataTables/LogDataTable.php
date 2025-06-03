@@ -18,7 +18,14 @@ class LogDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', 'logs.datatables_actions');
+        return $dataTable
+        ->addColumn('user_name', function($log){
+            return $log->user->name ?? '-';
+        })
+        ->addColumn('aktivitas', function ($log) {
+            return $log->description;
+        })
+        ->addColumn('action', 'logs.datatables_actions');
     }
 
     /**
@@ -68,6 +75,10 @@ class LogDataTable extends DataTable
         return [
             'log_name',
             'description',
+            // ['data' => 'aktivitas', 'name' => 'aktivitas', 'title' => 'Aktivitas'],
+            ['data' => 'user_name', 'name' => 'user_name', 'title' => 'User'],
+            // 'role',
+            'created_at',
             'subject_type',
             'event',
             'subject_id',
