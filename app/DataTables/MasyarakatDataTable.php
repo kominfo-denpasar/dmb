@@ -18,7 +18,18 @@ class MasyarakatDataTable extends DataTable
     {
         $dataTable = new EloquentDataTable($query);
 
-        return $dataTable->addColumn('action', 'masyarakats.datatables_actions');
+        return $dataTable
+        ->addColumn('action', 'masyarakats.datatables_actions')
+        ->editColumn('status', function ($sql) {
+            if ($sql->status == 0) {
+                return "<span class='badge bg-danger'> Tidak Aktif </span>";
+            } elseif ($sql->status == 1) {
+                return "<span class='badge bg-success'> Aktif </span>";
+            } else {
+                return "-";
+            }
+        })
+        ->rawColumns(['status', 'hp', 'action']);
     }
 
     /**

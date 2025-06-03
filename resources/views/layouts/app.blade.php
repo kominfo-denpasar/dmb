@@ -16,6 +16,9 @@
 <div>Exists: {{ $fileExists ? 'Yes' : 'No' }}</div> --}}
 
 <x-laravel-ui-adminlte::adminlte-layout>
+    <!-- @push('head')
+        @stack('third_party_stylesheets') {{-- Tambahkan CSS di HEAD --}}
+    @endpush -->
     <body class="hold-transition sidebar-mini layout-fixed">
         <div class="wrapper">
             <!-- Main Header -->

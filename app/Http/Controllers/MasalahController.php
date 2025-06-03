@@ -47,6 +47,11 @@ class MasalahController extends AppBaseController
 
         $masalah = $this->masalahRepository->create($input);
 
+        activity()
+          ->causedBy(auth()->user())
+          ->performedOn($masalah)
+          ->log('Menambahkan data masalah');
+
         Flash::success('Masalah saved successfully.');
 
         return redirect(route('masalahs.index'));
@@ -99,6 +104,11 @@ class MasalahController extends AppBaseController
 
         $masalah = $this->masalahRepository->update($request->all(), $id);
 
+        activity()
+          ->causedBy(auth()->user())
+          ->performedOn($masalah)
+          ->log('Memperbarui data masalah');
+
         Flash::success('Masalah updated successfully.');
 
         return redirect(route('masalahs.index'));
@@ -118,6 +128,11 @@ class MasalahController extends AppBaseController
 
             return redirect(route('masalahs.index'));
         }
+
+        activity()
+          ->causedBy(auth()->user())
+          ->performedOn($masalah)
+          ->log('Menghapus data masalah');
 
         $this->masalahRepository->delete($id);
 
