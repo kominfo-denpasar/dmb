@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('page-title', 'Pengaturans')
+@section('page-title', 'Konfigurasi & Narasi')
 @section('breadcrumb')
-    <li class="breadcrumb-item active">Pengaturans</li>
+    <li class="breadcrumb-item active">Konfigurasi & Narasi</li>
 @endsection
 @section('content')
     <section class="content-header">
@@ -10,12 +10,12 @@
                 <div class="col-sm-6">
                     <h1></h1>
                 </div>
-                <div class="col-sm-6">
+                <!-- <div class="col-sm-6">
                     <a class="btn btn-primary float-right"
                        href="{{ route('pengaturans.create') }}">
                         Add New
                     </a>
-                </div>
+                </div> -->
             </div>
         </div>
     </section>

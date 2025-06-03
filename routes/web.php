@@ -50,7 +50,6 @@ Route::get('/privasi', [App\Http\Controllers\FrontController::class, 'privasi'])
 Route::get('/artikel/{slug}', [App\Http\Controllers\FrontController::class, 'blogDetail'])->name('front.blog-detail');
 Route::get('/artikel', [App\Http\Controllers\FrontController::class, 'blogList'])->name('front.blog-list');
 
-
 Auth::routes();
 
 Route::group([
@@ -60,6 +59,8 @@ Route::group([
     Route::prefix('admin')->group(function () {
 
         Route::get('/profil', [App\Http\Controllers\HomeController::class, 'profil'])->name('backend.profil');
+        Route::patch('/profil/update/{id}', [App\Http\Controllers\HomeController::class, 'updateProfil'])->name('backend.update-profil');
+        Route::patch('/profil/admin/{id}', [App\Http\Controllers\HomeController::class, 'updateProfilAdmin'])->name('backend.update-profil-admin');
         Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
         // dashboard
@@ -69,6 +70,8 @@ Route::group([
             Route::get('/', [App\Http\Controllers\HomePsikologController::class, 'index'])->name('home-psikolog');
             Route::get('/konseling/{id}', [App\Http\Controllers\HomePsikologController::class, 'konseling'])->name('backend.konseling');
             Route::get('/konseling/{id}/laporan-detail', [App\Http\Controllers\HomePsikologController::class, 'laporanDetail'])->name('backend.laporan-detail');
+            Route::get('/konseling/{id}/pdf', [App\Http\Controllers\HomePsikologController::class, 'printPdf'])->name('konseling.pdf');
+
             Route::get('/konseling/evaluasi/{id}', [App\Http\Controllers\HomePsikologController::class, 'formEvaluasi'])->name('backend.evaluasi');
 
             Route::get('/konseling/batal/{id}', [App\Http\Controllers\HomePsikologController::class, 'batal'])->name('backend.konseling-batal');
@@ -120,4 +123,4 @@ Route::get('/notif', [App\Http\Controllers\FrontController::class, 'testNotif'])
 
 
 
-Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');
+// Route::any('{catchall}', [App\Http\Controllers\FrontController::class, 'notFound'])->where('catchall', '.*');

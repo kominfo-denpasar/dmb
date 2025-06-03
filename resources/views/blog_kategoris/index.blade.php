@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('page-title', 'Blog Kategoris')
+@section('page-title', 'Kategori')
 @section('breadcrumb')
-    <li class="breadcrumb-item active">Blog Kategoris</li>
+    <li class="breadcrumb-item active">Kategori</li>
 @endsection
 @section('content')
     <section class="content-header">
@@ -13,7 +13,7 @@
                 <div class="col-sm-6">
                     <a class="btn btn-primary float-right"
                        href="{{ route('blog-kategoris.create') }}">
-                        Add New
+                        Tambah Baru
                     </a>
                 </div>
             </div>
