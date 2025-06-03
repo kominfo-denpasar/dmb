@@ -89,14 +89,10 @@
 								</tr>
 							@endif
 							@foreach($keluhan as $k)
-								<tr>
-									<td>
-										{{$loop->iteration}}
-									</td>
-									<td>{{$k->nama}}</td>
-									<td>
-										{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y | h:i')}} WITA
-									</td>
+								<tr @if($k->status == 0) class="table-danger" @endif>
+									<td>{{ $loop->iteration }}</td>
+									<td>{{ $k->nama }}</td>
+									<td>{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y | h:i') }} WITA</td>
 									<td>
 										@if($k->status == 2)
 											<span class="badge bg-success">Selesai</span>
@@ -109,11 +105,11 @@
 										@endif
 									</td>
 									<td>
-										<a href="{{url('admin/home-psikolog/konseling/'.$k->id)}}" class="text-muted">
+										<a href="{{ url('admin/home-psikolog/konseling/'.$k->id) }}" class="text-muted">
 											<i class="fas fa-search"></i>
 										</a>&nbsp;
 										@if($k->status == 2)
-											<a href="{{route('backend.laporan-detail', $k->id)}}" class="text-muted">
+											<a href="{{ route('backend.laporan-detail', $k->id) }}" class="text-muted">
 												<i class="fas fa-print"></i>
 											</a>
 										@endif

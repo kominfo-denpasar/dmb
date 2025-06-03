@@ -3,8 +3,7 @@
 @section('breadcrumb')
     <li class="breadcrumb-item active">Detail Konseling</li>
 @endsection
-@section('content') 
-
+@section('content')
 	<section class="content">
 			<div class="container-fluid">
 				<div class="row">

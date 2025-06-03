@@ -1,7 +1,7 @@
 @extends('layouts.app')
-@section('page-title', 'Data Masyarakats')
+@section('page-title', 'Data Masyarakat')
 @section('breadcrumb')
-    <li class="breadcrumb-item active"> Data Masyarakats</li>
+    <li class="breadcrumb-item active"> Data Masyarakat</li>
 @endsection
 @section('content')
     <section class="content-header">

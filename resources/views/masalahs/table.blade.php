@@ -14,7 +14,25 @@
                 <tr>
                     <td>{{ $masalah->nama }}</td>
                     <td>{{ $masalah->deskripsi }}</td>
-                    <td>{{ $masalah->status }}</td>
+                    <!-- <td>{{ $masalah->status }}</td> -->
+                    <td>
+                        @if ((int) $masalah->status === 1)
+                             <span class="badge bg-success">Aktif</span>
+                        @elseif ((int) $masalah->status === 0)
+                            <span class="badge bg-danger">Tidak Aktif</span>
+                        @else
+                            <span class="badge bg-secondary">-</span>
+                        @endif
+                    </td>
+                    <!-- <td>
+                        @if ($masalah->staus == 1)
+                            <span class="badge bg-success">Aktif</span>
+                        @elseif ($masalah->status == 0)
+                            <span class="badge bg-danger">Tidak Aktif</span>
+                        @else
+                            <span class="badge bg-secondary">-</span>
+                        @endif
+                    </td> -->
                     <td  style="width: 120px">
                         {!! Form::open(['route' => ['masalahs.destroy', $masalah->id], 'method' => 'delete']) !!}
                         <div class='btn-group'>

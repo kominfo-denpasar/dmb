@@ -63,6 +63,26 @@ class FrontController extends Controller
 		]);
 	}
 
+	//konversi penyesuaian nomer telp
+	public function normalizePhoneNumber($phone)
+	{
+		// Hilangkan spasi, tanda +, tanda -, titik, dan karakter non-digit
+		$phone = preg_replace('/[^0-9]/', '', $phone);
+
+		// Jika diawali dengan 0 (contoh: 0821...), ganti jadi 62
+		if (substr($phone, 0, 1) === '0') {
+			$phone = '62' . substr($phone, 1);
+		}
+
+		// Jika diawali dengan 8 (tanpa 0 atau 62), tambahkan 62 di depannya
+		if (substr($phone, 0, 1) === '8') {
+			$phone = '62' . $phone;
+		}
+
+		// Jika sudah diawali 62, biarkan
+		return $phone;
+	}
+
 	/**
 	 * Halaman intro survei.
 	 *
@@ -290,8 +310,9 @@ class FrontController extends Controller
 		
 		// kirim whatsapp
 		$data = [
-			'phone' => '0'.$masyarakat->hp,
-			'message' => "Halo $masyarakat->nama, berikut adalah hasil survei Anda:\n\n$hasil_text\n\nTerima kasih telah mengikuti survei ini.\n\nJika Anda ingin melakukan konseling, dapat mengklik link berikut: ".route('front.konseling-store-reg', $masyarakat->token)."\n\nSalam, Denpasar Menyama Bagia"
+			// 'phone' => '62'.$masyarakat->hp,
+			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
+			'message' => "Halo $masyarakat->nama, berikut adalah hasil survei Anda:\n\n$hasil_text\n\nTerima kasih telah mengikuti survei ini.\n\nJika Anda ingin melakukan konseling, dapat mengklik link berikut: ".route('front.konseling-store-reg', $masyarakat->token)."\n\nSalam, Badung Menyama Bagia"
 		];
 		
 		// script
@@ -362,7 +383,8 @@ class FrontController extends Controller
 
 		// kirim whatsapp
 		$data = [
-			'phone' => '0'.$masyarakat->hp,
+			// 'phone' => '62'.$masyarakat->hp,
+			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
 			'message' => "Halo $masyarakat->nama, berikut adalah kode OTP Anda.\n\nKode: $otp->token \n\nSilahkan input kode pada field yang sudah disediakan pada website. Mohon tidak menyebarkan kode ini kepada orang lain. Kode ini hanya berlaku selama 15 menit.\n\nSalam, Denpasar Menyama Bagia"
 		];
 		
@@ -682,8 +704,8 @@ class FrontController extends Controller
 			// kirim whatsapp untuk user pemohon & psikolog
 			$alamat_web = url()->to('/').'/login';
 			$data =[
-				'phone' => '0'.$masyarakat->psikolog_hp,
-				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
+				'phone' => '62'.$masyarakat->psikolog_hp,
+				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
@@ -692,8 +714,9 @@ class FrontController extends Controller
 			$mailController->FinalKonseling($masyarakat,$alamat_web);
 
 			$data = [
-				'phone' => '0'.$masyarakat->hp,
-				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+				// 'phone' => '62'.$masyarakat->hp,
+				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
+				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 		}
@@ -942,8 +965,8 @@ class FrontController extends Controller
 	{
 		// kirim whatsapp untuk user pemohon
 		$data = [
-			'phone' => '081238921686',
-			'message' => "weee",
+			'phone' => '6282146527698',
+			'message' => "ahhhhhh",
 		];
 		
 		// script
