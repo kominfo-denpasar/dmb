@@ -79,13 +79,13 @@ class LogDataTable extends DataTable
             ['data' => 'user_name', 'name' => 'user_name', 'title' => 'User'],
             // 'role',
             'created_at',
-            'subject_type',
-            'event',
-            'subject_id',
-            'causer_type',
+            // 'subject_type',
+            // 'event',
+            // 'subject_id',
+            // 'causer_type',
             'causer_id',
-            'properties',
-            'batch_uuid'
+            // 'properties',
+            // 'batch_uuid'
         ];
     }
 

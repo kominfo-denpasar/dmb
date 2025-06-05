@@ -37,14 +37,14 @@ class Controller extends BaseController
     public function notif_wa($data)
     {
         //Dev Environment
-        $url = "http://localhost:3000/send/message";
-        $username = "user1";
-        $password = "pass1";
+        $url = "https://wa.kreatifitas.site/send/message";
+        // $username = "zen8";
+        // $password = "Priambada29";
 
         //Production Environment
         // $url = env('WA_API_URL');
-        // $username = env('WA_API_AUTH_USER');
-        // $password = env('WA_API_AUTH_PASS');
+        $username = env('WA_API_AUTH_USER');
+        $password = env('WA_API_AUTH_PASS');
 
         $curl = curl_init();
 
