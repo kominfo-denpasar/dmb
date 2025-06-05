@@ -73,7 +73,7 @@ class LogDataTable extends DataTable
     protected function getColumns()
     {
         return [
-            'log_name',
+            // 'log_name',
             'description',
             // ['data' => 'aktivitas', 'name' => 'aktivitas', 'title' => 'Aktivitas'],
             ['data' => 'user_name', 'name' => 'user_name', 'title' => 'User'],
@@ -83,7 +83,7 @@ class LogDataTable extends DataTable
             // 'event',
             // 'subject_id',
             // 'causer_type',
-            'causer_id',
+            // 'causer_id',
             // 'properties',
             // 'batch_uuid'
         ];
