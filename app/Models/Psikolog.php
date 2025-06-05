@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
 
 class Psikolog extends Model
 {
@@ -47,6 +48,24 @@ class Psikolog extends Model
         'hp' => 'required',
         'alamat_praktek' => 'required'
     ];
+
+    public function setNikAttribute($value)
+    {
+        $this->attributes['nik'] = Crypt::encryptString($value);
+    }
+
+    public function getNikAttribute($value)
+    {
+        // jika value kosong, kembalikan null
+        if (!$value) return null;
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Illuminate\Contracts\Encryption\DecryptException $e) {
+            // Jika dekripsi gagal, kembalikan null
+            return null;
+        }
+    }
 
     
 }

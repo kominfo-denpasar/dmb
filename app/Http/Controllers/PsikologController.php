@@ -278,9 +278,9 @@ class PsikologController extends AppBaseController
 			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
-		if ($request->has('nik')){
-			$input['nik'] = Hash::make($request->nik);
-		}
+		// if ($request->has('nik')){
+		// 	$input['nik'] = Hash::make($request->nik);
+		// }
 
 		$psikolog = $this->psikologRepository->update($input, $id);
 

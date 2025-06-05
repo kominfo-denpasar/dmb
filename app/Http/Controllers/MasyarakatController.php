@@ -65,9 +65,9 @@ class MasyarakatController extends AppBaseController
     {
         $input = $request->all();
 
-        if (isset($input['nik'])){
-            $input['nik'] = Hash('sha256', $input['nik']);
-        }
+        // if (isset($input['nik'])){
+        //     $input['nik'] = Hash('sha256', $input['nik']);
+        // }
 
         $masyarakat = $this->masyarakatRepository->create($input);
 
@@ -130,9 +130,9 @@ class MasyarakatController extends AppBaseController
             return redirect(route('masyarakats.index'));
         }
 
-        if (isset($input['nik'])){
-            $input['nik'] = Hash('sha256', $input['nik']);
-        }
+        // if (isset($input['nik'])){
+        //     $input['nik'] = Hash('sha256', $input['nik']);
+        // }
 
         $masyarakat = $this->masyarakatRepository->update($request->all(), $id);
 
