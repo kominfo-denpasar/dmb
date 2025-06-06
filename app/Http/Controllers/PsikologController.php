@@ -232,10 +232,16 @@ class PsikologController extends AppBaseController
 
 		//upload image
 		if($request->file('foto')) {
-			// hapus file lama
-			$old_file = Psikolog::where('id', $id)->first();
-			if($old_file->foto) {
-				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->foto));
+			// ambil data lama
+			$old_file = Psikolog::find($id);
+
+			if ($old_file && $old_file->foto) {
+				$filePath = storage_path('app/public/uploads/psikolog/' . $old_file->foto);
+
+				// cek apakah file ada sebelum di-unlink
+				if (file_exists($filePath)) {
+					unlink($filePath);
+				}
 			}
 
 			$file = $request->file('foto');
@@ -257,9 +263,15 @@ class PsikologController extends AppBaseController
 		//upload ttd
 		if($request->file('ttd')) {
 			// hapus file lama
-			$old_file = Psikolog::where('id', $id)->first();
-			if($old_file->ttd) {
-				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->ttd));
+			$old_file = Psikolog::find($id);
+
+			if ($old_file && $old_file->ttd) {
+				$filePath = storage_path('app/public/uploads/psikolog/'.$old_file->ttd);
+
+				// cek apakah file ada sebelum di-unlink
+				if (file_exists($filePath)) {
+					unlink($filePath);
+				}
 			}
 
 			$file = $request->file('ttd');
@@ -277,10 +289,6 @@ class PsikologController extends AppBaseController
 
 			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
-
-		// if ($request->has('nik')){
-		// 	$input['nik'] = Hash::make($request->nik);
-		// }
 
 		$psikolog = $this->psikologRepository->update($input, $id);
 
@@ -307,6 +315,23 @@ class PsikologController extends AppBaseController
 			Flash::error('Psikolog not found');
 
 			return redirect(route('psikologs.index'));
+		}
+
+		// hapus file foto dan ttd
+		if ($psikolog->foto) {
+			$filePath = storage_path('app/public/uploads/psikolog/' . $psikolog->foto);
+			// cek apakah file ada sebelum di-unlink
+			if (file_exists($filePath)) {
+				unlink($filePath);
+			}
+		}
+
+		if ($psikolog->ttd) {
+			$filePath = storage_path('app/public/uploads/psikolog/' . $psikolog->ttd);
+			// cek apakah file ada sebelum di-unlink
+			if (file_exists($filePath)) {
+				unlink($filePath);
+			}
 		}
 
 		$this->psikologRepository->delete($id);

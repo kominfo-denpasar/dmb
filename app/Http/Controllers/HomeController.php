@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -145,10 +146,16 @@ class HomeController extends Controller
 
 		//upload image
 		if($request->file('foto')) {
-			// hapus file lama
-			$old_file = Psikolog::where('id', $id)->first();
-			if($old_file->foto) {
-				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->foto));
+			// ambil data lama
+			$old_file = Psikolog::find($id);
+
+			if ($old_file && $old_file->foto) {
+				$filePath = storage_path('app/public/uploads/psikolog/' . $old_file->foto);
+
+				// cek apakah file ada sebelum di-unlink
+				if (file_exists($filePath)) {
+					unlink($filePath);
+				}
 			}
 
 			$file = $request->file('foto');
@@ -169,10 +176,16 @@ class HomeController extends Controller
 
 		//upload ttd
 		if($request->file('ttd')) {
-			// hapus file lama
-			$old_file = Psikolog::where('id', $id)->first();
-			if($old_file->ttd) {
-				unlink(storage_path('app/public/uploads/psikolog/'.$old_file->ttd));
+			// ambil data lama
+			$old_file = Psikolog::find($id);
+
+			if ($old_file && $old_file->ttd) {
+				$filePath = storage_path('app/public/uploads/psikolog/'.$old_file->ttd);
+
+				// cek apakah file ada sebelum di-unlink
+				if (file_exists($filePath)) {
+					unlink($filePath);
+				}
 			}
 
 			$file = $request->file('ttd');
