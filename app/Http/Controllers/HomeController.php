@@ -129,11 +129,16 @@ class HomeController extends Controller
 
 		// dd($request->password);
 		if($request->password) {
-			// 
 			// dd($request->password);
 			$data = User::where('psikolog_id', $id)->update([
 				'password' => bcrypt($request->password)
 			]);
+		}
+
+		// jika nomor telepon diisi, normalisasi nomer telepon
+		if($request->hp) {
+			$hp = $this->normalizePhoneNumber($request->hp);
+			$request->merge(['hp' => $hp]);
 		}
 
 		if (empty($psikolog)) {

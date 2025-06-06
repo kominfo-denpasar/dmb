@@ -113,7 +113,7 @@
 										<tr>
 											<td data-label="Kolom" class="text-right">Kontak</td>
 											<td class="text-center">:</td>
-											<td data-label="Deskripsi" class="font-bold">(+62) {{$masyarakat->psikolog_hp}}</td>
+											<td data-label="Deskripsi" class="font-bold">{{$masyarakat->psikolog_hp}}</td>
 										</tr>
 										<tr>
 											<td data-label="Kolom" class="text-right">Alamat</td>
