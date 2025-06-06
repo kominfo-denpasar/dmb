@@ -138,10 +138,13 @@ class PsikologController extends AppBaseController
 			$input['ttd'] = $month_folder.'/'.$file_name;
 		}
 
-		if(!empty($input['nik'])){
-			$input['nik'] = Hash::make($request->nik);
+		// normalisasi nomor telepon
+		if($request->hp) {
+			$hp = $this->normalizePhoneNumber($request->hp);
+			$input['hp'] = $hp;
 		}
 
+		// input data
 		$psikolog = $this->psikologRepository->create($input);
 
 		activity()
@@ -215,11 +218,16 @@ class PsikologController extends AppBaseController
 
 		// dd($request->password);
 		if($request->password) {
-			// 
 			// dd($request->password);
 			$data = User::where('psikolog_id', $id)->update([
 				'password' => bcrypt($request->password)
 			]);
+		}
+
+		// jika nomor telepon diisi, normalisasi nomer telepon
+		if($request->hp) {
+			$hp = $this->normalizePhoneNumber($request->hp);
+			$request->merge(['hp' => $hp]);
 		}
 
 		if (empty($psikolog)) {
@@ -400,7 +408,7 @@ class PsikologController extends AppBaseController
             return view('layouts/datatables_action', compact('sql', 'table'));
         })
 		->editColumn('hp', function($sql){
-            return "<a href='tel:62$sql->hp'>0".$sql->hp."</a>";
+            return "<a href='tel:$sql->hp'>".$sql->hp."</a>";
         })
 		->editColumn('kec_id', function($sql){
             switch($sql->kec_id) {
