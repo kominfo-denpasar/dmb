@@ -275,6 +275,8 @@ class HomePsikologController extends Controller
 		// trigger kirim pesan ke klien untuk mengisi form evaluasi
 		$masyarakat = Masyarakat::where('token', $id)->first();
 
+		// dd($masyarakat);
+
 		$data = [
 			'phone' => '0'.$masyarakat->hp,
 			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', $id)."\n\nSalam, Denpasar Menyama Bagia"
@@ -282,8 +284,8 @@ class HomePsikologController extends Controller
 		$this->notif_wa($data);
 
 		// Kirim email
-		$mailController = new PhpMailController();
-		$mailController->kirimEvaluasi($masyarakat);
+		// $mailController = new PhpMailController();
+		// $mailController->kirimEvaluasi($masyarakat);
 
 		return redirect()->route('home-psikolog')->with('message', 'Berhasil mengirimkan formulir evaluasi ke masyarakat');
 	}

@@ -11,19 +11,22 @@ use App\Models\jadwal;
 use App\Models\Konseling;
 use App\Models\Evaluasi;
 use App\Models\Blog;
-use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
-use App\Http\Controllers\PhpMailController;
+use App\Traits\dateTransform;
+
+use Carbon\Carbon;
 
 use Artesaos\SEOTools\Facades\SEOTools;
 
 class FrontController extends Controller
 {
-	use \App\Traits\dateTransform;
+
+	use dateTransform;
+
 	/**
 	 * Create a new controller instance.
 	 *
@@ -63,26 +66,6 @@ class FrontController extends Controller
 			'psikolog' => $psikolog,
 			'blog' => $blog
 		]);
-	}
-
-	//konversi penyesuaian nomer telp
-	public function normalizePhoneNumber($phone)
-	{
-		// Hilangkan spasi, tanda +, tanda -, titik, dan karakter non-digit
-		$phone = preg_replace('/[^0-9]/', '', $phone);
-
-		// Jika diawali dengan 0 (contoh: 0821...), ganti jadi 62
-		if (substr($phone, 0, 1) === '0') {
-			$phone = '62' . substr($phone, 1);
-		}
-
-		// Jika diawali dengan 8 (tanpa 0 atau 62), tambahkan 62 di depannya
-		if (substr($phone, 0, 1) === '8') {
-			$phone = '62' . $phone;
-		}
-
-		// Jika sudah diawali 62, biarkan
-		return $phone;
 	}
 
 	/**
@@ -312,9 +295,8 @@ class FrontController extends Controller
 		
 		// kirim whatsapp
 		$data = [
-			// 'phone' => '62'.$masyarakat->hp,
-			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-			'message' => "Halo $masyarakat->nama, berikut adalah hasil survei Anda:\n\n$hasil_text\n\nTerima kasih telah mengikuti survei ini.\n\nJika Anda ingin melakukan konseling, dapat mengklik link berikut: ".route('front.konseling-store-reg', $masyarakat->token)."\n\nSalam, Badung Menyama Bagia"
+			'phone' => '0'.$masyarakat->hp,
+			'message' => "Halo $masyarakat->nama, berikut adalah hasil survei Anda:\n\n$hasil_text\n\nTerima kasih telah mengikuti survei ini.\n\nJika Anda ingin melakukan konseling, dapat mengklik link berikut: ".route('front.konseling-store-reg', $masyarakat->token)."\n\nSalam, Denpasar Menyama Bagia"
 		];
 		
 		// script
@@ -385,8 +367,7 @@ class FrontController extends Controller
 
 		// kirim whatsapp
 		$data = [
-			// 'phone' => '62'.$masyarakat->hp,
-			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
+			'phone' => '0'.$masyarakat->hp,
 			'message' => "Halo $masyarakat->nama, berikut adalah kode OTP Anda.\n\nKode: $otp->token \n\nSilahkan input kode pada field yang sudah disediakan pada website. Mohon tidak menyebarkan kode ini kepada orang lain. Kode ini hanya berlaku selama 15 menit.\n\nSalam, Denpasar Menyama Bagia"
 		];
 		
@@ -692,26 +673,25 @@ class FrontController extends Controller
 	 */
 	public function konselingJadwalStore(Request $request)
 	{
+		// dd($request);
 		//validate form
 		$this->validate($request, [
 			'psikolog_id'   => 'required',
-			'jadwal_id'   => 'required',
+			// 'jadwal_id'   => 'required',
 			'mas_id'   => 'required',
-			'jadwal_tgl'   => 'required',
-			'jadwal_jam'   => 'required',
-			'jadwal_alt_tgl'   => 'required',
-			'jadwal_alt_jam'   => 'required'
+			'utama'   => 'required',
+			'alternatif'   => 'required'
 		]);
 
 		// updata data keluhan
-		$keluhan = keluhan::where(['mas_id' => $request->mas_id])
+		$keluhan = keluhan::where(['mas_id' => $request->mas_id, 'status' => 0])
 		->update([
 			'psikolog_id'   	=> $request->psikolog_id,
-			'jadwal_id'     	=> $request->jadwal_id,
-			'jadwal_tgl'     	=> $request->jadwal_tgl,
-			'jadwal_jam'     	=> $request->jadwal_jam,
-			'jadwal_alt_tgl'   	=> $request->jadwal_alt_tgl,
-			'jadwal_alt_jam'   	=> $request->jadwal_alt_jam
+			// 'jadwal_id'     	=> $request->jadwal_id,
+			'jadwal_tgl'     	=> $request->utama['tanggal'],
+			'jadwal_jam'     	=> $request->utama['jam'],
+			'jadwal_alt_tgl'   	=> $request->alternatif['tanggal'],
+			'jadwal_alt_jam'   	=> $request->alternatif['jam']
 		]);
 
 		//redirect to konseling final
@@ -730,27 +710,26 @@ class FrontController extends Controller
 	{
 		//ambil data join masyarakat, keluhan dan jadwal
 		$masyarakat = Masyarakat::join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
-			->join('jadwals', 'keluhans.jadwal_id', '=', 'jadwals.id')
 			->join('psikologs', 'keluhans.psikolog_id', '=', 'psikologs.id')
 			->select(
+				'masyarakats.token', 
 				'masyarakats.nik', 
 				'masyarakats.nama', 
 				'masyarakats.hp', 
 				'keluhans.keluhan', 
-				'jadwals.hari', 
-				'jadwals.jam', 
+				'keluhans.jadwal_tgl', 
+				'keluhans.status', 
+				'keluhans.jadwal_jam', 
 				'psikologs.id as psikolog_id',
 				'psikologs.nama as psikolog',
 				'psikologs.alamat_praktek',
-				'psikologs.hp as psikolog_hp')
-			->where([
-				'masyarakats.token' => $id,
-				'keluhans.status' => 0
-			])
-			->orWhere([
-				'masyarakats.token' => $id,
-				'keluhans.status' => 1
-			])
+				'psikologs.hp as psikolog_hp'
+			)
+			->where('masyarakats.token', $id)
+			->where(function($query) {
+				$query->where('keluhans.status', 0)
+					->orWhere('keluhans.status', 1);
+			})
 			->first();
 		
 		// dd($masyarakat);
@@ -777,18 +756,13 @@ class FrontController extends Controller
 			// kirim whatsapp untuk user pemohon & psikolog
 			$alamat_web = url()->to('/').'/login';
 			$data =[
-				'phone' => '62'.$masyarakat->psikolog_hp,
+				'phone' => '0'.$masyarakat->psikolog_hp,
 				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
-			// Kirim email
-			$mailController = new PhpMailController();
-			$mailController->FinalKonseling($masyarakat,$alamat_web);
-
 			$data = [
-				// 'phone' => '62'.$masyarakat->hp,
-				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
+				'phone' => '0'.$masyarakat->hp,
 				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
@@ -796,10 +770,23 @@ class FrontController extends Controller
 
 		// cek apakah sudah mengisi semua form konseling
 		if(Session::get('jadwal') && $masyarakat) {
+			//get data konten dari tabel pengaturan
+			$selanjutnya = DB::table('pengaturans')
+				->select('value')
+				->where('slug', 'selanjutnya')
+				->first();
+
+			$jika_lewat = DB::table('pengaturans')
+				->select('value')
+				->where('slug', 'jika-lewat')
+				->first();
+
 			return view('front.konseling_final', [
 				'mas_id' => $id, 
-				'masyarakat' => $masyarakat]
-			);
+				'masyarakat' => $masyarakat,
+				'selanjutnya' => $selanjutnya,
+				'jika_lewat' => $jika_lewat
+				]);
 		} else {
 			return redirect()->route('front.survei-intro');
 		}
@@ -977,10 +964,7 @@ class FrontController extends Controller
 		} else {
 			return view('front.404');
 		}
-		
-        
-
-		
+	
 	}
 
 	/**
@@ -1046,8 +1030,8 @@ class FrontController extends Controller
 	{
 		// kirim whatsapp untuk user pemohon
 		$data = [
-			'phone' => '6282146527698',
-			'message' => "ahhhhhh",
+			'phone' => '081238921686',
+			'message' => "weee",
 		];
 		
 		// script

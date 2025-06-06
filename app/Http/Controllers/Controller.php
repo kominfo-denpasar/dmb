@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\Http;
+use Spatie\Activitylog\Facades\Activity;
 
 class Controller extends BaseController
 {
@@ -36,31 +38,27 @@ class Controller extends BaseController
 
     public function notif_wa($data)
     {
-        //Dev Environment
-        $url = "https://wa.kreatifitas.site/send/message";
-        // $username = "zen8";
-        // $password = "Priambada29";
 
-        //Production Environment
-        // $url = env('WA_API_URL');
-        $username = env('WA_API_AUTH_USER');
-        $password = env('WA_API_AUTH_PASS');
+        try {
+            $response = Http::withBasicAuth(
+                env('WA_API_AUTH_USER'), 
+                env('WA_API_AUTH_PASS'))
+            ->post(env('WA_API_URL'), $data);
 
-        $curl = curl_init();
+            // $responseData = $response->json();
 
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+            if ($response->successful()) {
+                return $response->json();
+            }
 
-        curl_setopt($curl, CURLOPT_USERPWD, "$username:$password");
+            Log::error('WA Response failed: ' . $response->body());
 
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+            Activity::causedBy('System')
+                ->log('WA Response failed: ' . $response->body());
 
-        $result = curl_exec($curl);
-        curl_close($curl);
-        // dd($result);
+        } catch (\Exception $e) {
+            Log::error('WA Request error: ' . $e->getMessage());
+        }
     }
 
     public function getUser(){
