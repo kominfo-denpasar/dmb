@@ -45,7 +45,14 @@ class HomePsikologController extends Controller
 			// get data keluhan masyarakat yang ditangani oleh psikolog
 			$keluhan = keluhan::where('psikolog_id', $this->getUser()->psikolog_id)
 				->join('masyarakats', 'keluhans.mas_id', '=', 'masyarakats.token')
-				->select('keluhans.*', 'masyarakats.nama', 'masyarakats.hp')
+				->select(
+					'keluhans.*', 
+					'masyarakats.nama', 
+					'masyarakats.hp', 
+					'jadwal_alt2_tgl as tanggal_konseling', 
+					'jadwal_alt2_jam as jam_konseling'
+				)
+				->orderBy('keluhans.status', 'asc')
 				->orderBy('keluhans.created_at', 'desc')
 				->get();
 			

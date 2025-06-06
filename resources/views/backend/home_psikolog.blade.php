@@ -76,8 +76,9 @@
 							<thead>
 								<tr>
 									<th>#</th>
+									<th>Registrasi</th>
 									<th>Nama Klien</th>
-									<th>Tanggal Registrasi</th>
+									<th>Jadwal Konseling</th>
 									<th>Status</th>
 									<th>Opsi</th>
 								</tr>
@@ -91,8 +92,15 @@
 							@foreach($keluhan as $k)
 								<tr @if($k->status == 0) class="table-danger" @endif>
 									<td>{{ $loop->iteration }}</td>
+									<td>{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y') }}</td>
 									<td>{{ $k->nama }}</td>
-									<td>{{ \Carbon\Carbon::parse($k->created_at)->format('d/m/Y | h:i') }} WITA</td>
+									<td>
+										@if($k->tanggal_konseling != null)
+											{{ \Carbon\Carbon::parse($k->tanggal_konseling)->format('d/m/Y') }}, Jam {{ $k->jam_konseling }} WITA
+										@else
+											<span class="badge bg-default">Belum Konfirmasi Jadwal</span>
+										@endif
+									</td>
 									<td>
 										@if($k->status == 2)
 											<span class="badge bg-success">Selesai</span>
