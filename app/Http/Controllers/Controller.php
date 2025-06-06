@@ -61,6 +61,26 @@ class Controller extends BaseController
     //     }
     // }
 
+    //konversi penyesuaian nomer telp
+	public function normalizePhoneNumber($phone)
+	{
+		// Hilangkan spasi, tanda +, tanda -, titik, dan karakter non-digit
+		$phone = preg_replace('/[^0-9]/', '', $phone);
+
+		// Jika diawali dengan 0 (contoh: 0821...), ganti jadi 62
+		if (substr($phone, 0, 1) === '0') {
+			$phone = '62' . substr($phone, 1);
+		}
+
+		// Jika diawali dengan 8 (tanpa 0 atau 62), tambahkan 62 di depannya
+		if (substr($phone, 0, 1) === '8') {
+			$phone = '62' . $phone;
+		}
+
+		// Jika sudah diawali 62, biarkan
+		return $phone;
+	}
+
     public function getUser(){
         // ambil data user
         return $data = config('roles.models.defaultUser')::find(Auth::id());

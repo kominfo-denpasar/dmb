@@ -89,14 +89,14 @@
 					<div class="field-body">
 						<div class="field">
 							<div class="field addons">
-								<div class="control">
+								<!-- <div class="control">
 									<input class="input" value="+62" size="2" readonly="">
-								</div>
+								</div> -->
 								<div class="control expanded">
 									<input class="input" type="tel" placeholder="81xxx" value="{{Session::get('hp')}}" name="hp" readonly>
 								</div>
 							</div>
-							<p class="help">Tanpa nol depan. Disarankan nomor yang terhubung dengan WhatsApp. Kami menggunakan WhatsApp untuk mengirimkan info ke Anda</p>
+							<p class="help">Disarankan nomor yang terhubung dengan WhatsApp. Kami menggunakan WhatsApp untuk mengirimkan info ke Anda</p>
 						</div>
 					</div>
 				</div>
