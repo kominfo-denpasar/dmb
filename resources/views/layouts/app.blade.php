@@ -34,24 +34,23 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item dropdown user-menu">
                         <a href="#!" class="nav-link dropdown-toggle" data-toggle="dropdown">
-                            @if(Auth::user()->psikolog_id && isset($psikolog) && $psikolog->foto)
-                                <img class="user-image img-circle elevation-2" alt="User Image"
-                                    src="{{ asset('storage/uploads/psikolog/' . $psikolog->foto) }}" 
-                                    alt="Foto Psikolog">
-                            @else
-                                <img class="user-image img-circle elevation-2" alt="User Image" 
-                                    src="{{ asset('img/pp_user.jpg') }}" 
-                                    alt="Foto Default User">
-                            @endif
                             {{-- <img src="{{ $photoUrl }}"
                                 class="user-image img-circle elevation-2" alt="User Image"> --}}
+                            <i class="fas fa-user ml-1"></i>&nbsp; 
                             <span class="d-none d-md-inline">{{ Auth::user()->name }}</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
                             <!-- User image -->
                             <li class="user-header bg-primary">
-                                <img src="{{ $photoUrl }}"
-                                    class="img-circle elevation-2" alt="User Image">
+                                @if(Auth::user()->psikolog_id && isset($psikolog) && $psikolog->foto)
+                                <img class="img-circle elevation-2" alt="User Image"
+                                    src="{{ asset('storage/uploads/psikolog/' . $psikolog->foto) }}" 
+                                    alt="Foto Psikolog">
+                                @else
+                                    <img class="img-circle elevation-2" alt="User Image" 
+                                        src="{{ asset('img/pp_user.jpg') }}" 
+                                        alt="Foto Default User">
+                                @endif
                                 <p>
                                     {{ Auth::user()->name }}
                                     <small>Anggota sejak {{ Auth::user()->created_at->format('M. Y') }}</small>
