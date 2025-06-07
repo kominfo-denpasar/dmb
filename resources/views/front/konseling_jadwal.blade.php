@@ -317,6 +317,17 @@
     });
 
     function submitPilihan() {
+		// Tampilkan popup loading dulu
+		Swal.fire({
+			title: 'Menyimpan...',
+			text: 'Mohon tunggu sebentar',
+			allowOutsideClick: false,
+			allowEscapeKey: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+		
         $.ajax({
             url: "{{route('front.konseling-jadwal-store')}}",
             method: 'POST',
