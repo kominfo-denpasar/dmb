@@ -112,8 +112,10 @@
 									<li class="nav-item"><a class="nav-link active" href="#activity" data-toggle="tab">Informasi</a></li>
 									<li class="nav-item"><a class="nav-link" href="#timeline" data-toggle="tab">Keluhan & DASS-21</a></li>
 									@role('psikolog', true)
-									<li class="nav-item"><a class="nav-link" href="#evaluasi" data-toggle="tab">Evaluasi</a></li>
-									<li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Input Data Konseling</a></li>
+										@if($data->status==1 || $data->status==2)
+										<li class="nav-item"><a class="nav-link" href="#evaluasi" data-toggle="tab">Evaluasi</a></li>
+										<li class="nav-item"><a class="nav-link" href="#settings" data-toggle="tab">Input Data Konseling</a></li>
+										@endif
 									@endrole
 								</ul>
 							</div><!-- /.card-header -->
@@ -466,7 +468,7 @@
 									</div>
 									<!-- /.tab-pane -->
 
-									@if($data->status!=3)
+									@if($data->status==1 || $data->status==2)
 										<div class="tab-pane" id="evaluasi">
 											<div class="col-11">
 												<div class="callout callout-info">
