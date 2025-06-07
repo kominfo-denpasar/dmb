@@ -27,10 +27,25 @@ trait kuotaTrait
         $kuotaSistemMax = $kuotaSistem ? (int) $kuotaSistem->value : 100; // Default 100 jika tidak ada pengaturan
 
         // Hitung pemakaian kuota
-        $totalSistem = keluhan::whereMonth('jadwal_alt2_tgl', $bulan)->whereYear('jadwal_alt2_tgl', $tahun)->count();
-        $totalHari = keluhan::where('psikolog_id', $psikologId)->whereDate('jadwal_alt2_tgl', $tanggalHariIni)->count();
-        $totalBulan = keluhan::where('psikolog_id', $psikologId)->whereMonth('jadwal_alt2_tgl', $bulan)->whereYear('jadwal_alt2_tgl', $tahun)->count();
-        $totalTahun = keluhan::where('psikolog_id', $psikologId)->whereYear('jadwal_alt2_tgl', $tahun)->count();
+        $totalSistem = keluhan::whereMonth('jadwal_alt2_tgl', $bulan)
+            ->whereYear('jadwal_alt2_tgl', $tahun)
+            ->count();
+
+        $totalHari = keluhan::where('psikolog_id', $psikologId)
+            ->where('status', '!=', 3) // Status tidak 3 (batal)
+            ->whereDate('jadwal_alt2_tgl', $tanggalHariIni)
+            ->count();
+
+        $totalBulan = keluhan::where('psikolog_id', $psikologId)
+            ->where('status', '!=', 3) // Status tidak 3 (batal)
+            ->whereMonth('jadwal_alt2_tgl', $bulan)
+            ->whereYear('jadwal_alt2_tgl', $tahun)
+            ->count();
+
+        $totalTahun = keluhan::where('psikolog_id', $psikologId)
+            ->where('status', '!=', 3) // Status tidak 3 (batal)
+            ->whereYear('jadwal_alt2_tgl', $tahun)
+            ->count();
 
         if ($totalSistem >= $kuotaSistemMax) {
             return ['status' => false, 'message' => 'Kuota sistem sudah penuh.'];
