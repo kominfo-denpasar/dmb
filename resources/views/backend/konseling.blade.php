@@ -60,8 +60,8 @@
 								<hr>
 								<strong><i class="fas fa-phone mr-1"></i> Nomor HP</strong>
 								<p class="text-muted">
-									<a target="_BLANK" href="//wa.me/62{{$data->hp}}">
-									(+62) {{$data->hp}}
+									<a target="_BLANK" href="//wa.me/{{$data->hp}}">
+									{{$data->hp}}
 									</a>
 								</p>
 

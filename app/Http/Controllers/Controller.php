@@ -36,6 +36,20 @@ class Controller extends BaseController
         // print_r($result);
     }
 
+    // kirim email
+    // public function notif_email($data)
+    // {
+    //     try {
+    //         $mailController = new PhpMailController();
+	// 	    $mailController->RescheduleKonseling($data);
+    //         // $mailController->sendEmail($data);
+    //         // return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
+    //     } catch (\Exception $e) {
+    //         Log::error('Email sending failed: ' . $e->getMessage());
+    //         // return response()->json(['status' => 'error', 'message' => 'Failed to send email'], 500);
+    //     }
+    // }
+
     // public function notif_wa($data)
     // {
 

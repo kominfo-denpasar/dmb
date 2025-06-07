@@ -759,13 +759,13 @@ class FrontController extends Controller
 			$alamat_web = url()->to('/').'/login';
 			$data =[
 				'phone' => $this->normalizePhoneNumber($masyarakat->psikolog_hp),
-				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: 0$masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->psikolog, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nKlien: $masyarakat->nama\nNomor HP Klien: $masyarakat->hp\n\nUntuk masuk ke dalam sistem Anda dapat mengakses alamat ini: $alamat_web \nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
 			$data = [
 				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->jadwal_tgl\nJam: $masyarakat->jadwal_jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: $masyarakat->psikolog_hp\nAlamat Praktek Psikolog: $masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 		}

@@ -75,7 +75,7 @@ Route::group([
             Route::get('/konseling/evaluasi/{id}', [App\Http\Controllers\HomePsikologController::class, 'formEvaluasi'])->name('backend.evaluasi');
 
             Route::get('/konseling/batal/{id}', [App\Http\Controllers\HomePsikologController::class, 'batal'])->name('backend.konseling-batal');
-            Route::get('/konseling/reschedule', [App\Http\Controllers\HomePsikologController::class, 'reschedule'])->name('backend.konseling-reschedule');
+            Route::post('/konseling/reschedule', [App\Http\Controllers\HomePsikologController::class, 'reschedule'])->name('backend.konseling-reschedule');
 
             Route::post('/konseling/jadwal', [App\Http\Controllers\HomePsikologController::class, 'storeJadwal'])->name('backend.storeJadwal');
             Route::post('/konseling/jadwal/update', [App\Http\Controllers\HomePsikologController::class, 'updateJadwal'])->name('backend.updateJadwal');

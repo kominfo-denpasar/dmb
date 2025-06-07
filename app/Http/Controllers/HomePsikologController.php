@@ -285,14 +285,10 @@ class HomePsikologController extends Controller
 		// dd($masyarakat);
 
 		$data = [
-			'phone' => '0'.$masyarakat->hp,
+			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
 			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', $id)."\n\nSalam, Denpasar Menyama Bagia"
 		];
 		$this->notif_wa($data);
-
-		// Kirim email
-		// $mailController = new PhpMailController();
-		// $mailController->kirimEvaluasi($masyarakat);
 
 		return redirect()->route('home-psikolog')->with('message', 'Berhasil mengirimkan formulir evaluasi ke masyarakat');
 	}
@@ -595,7 +591,7 @@ class HomePsikologController extends Controller
 
 			// kirim notifikasi ke masyarakat
 			$data = [
-				'phone' => '0'.$masyarakat->hp,
+				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
 				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal $keluhan->jadwal_alt2_tgl jam $keluhan->jadwal_alt2_jam telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
@@ -655,14 +651,10 @@ class HomePsikologController extends Controller
 		$masyarakat = Masyarakat::where('token', $keluhan->mas_id)->first();
 
 		$data = [
-			'phone' => '0'.$masyarakat->hp,
+			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
 			'message' => "Halo $masyarakat->nama, jadwal konseling Anda telah direschedule menjadi:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 		];
 		$this->notif_wa($data);
-
-		// Kirim email
-		$mailController = new PhpMailController();
-		$mailController->RescheduleKonseling($masyarakat);
 
 		if($keluhan && $konseling) {
 			return redirect()->route('backend.konseling', $request->keluhan_id)->with('success', 'Berhasil melakukan reschedule konseling');
