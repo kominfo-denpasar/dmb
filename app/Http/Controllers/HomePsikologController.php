@@ -60,15 +60,15 @@ class HomePsikologController extends Controller
 
 			// data dashboard
 			$dashboard = [
-				'konseling_belum' => Konseling::where([
+				'konseling_belum' => Keluhan::where([
 					'psikolog_id' => $this->getUser()->psikolog_id,
 					'status' => 0
 				])->count(),
-				'konseling_on_progress' => Konseling::where([
+				'konseling_on_progress' => Keluhan::where([
 					'psikolog_id' => $this->getUser()->psikolog_id,
 					'status' => 1
 				])->count(),
-				'konseling_selesai' => Konseling::where([
+				'konseling_selesai' => Keluhan::where([
 					'psikolog_id' => $this->getUser()->psikolog_id,
 					'status' => 2
 				])->count(),
