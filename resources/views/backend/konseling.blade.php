@@ -520,7 +520,7 @@
 													@if($evaluasi==null)
 													<a href="{{route('backend.evaluasi', $data->token)}}" class="btn btn-primary">
 													@else
-													<a class="btn btn-primary disabled">
+													<a class="btn btn-primary disabled" style="display: none;">
 													@endif
 														Kirim Form Evaluasi ke Klien
 													</a>
