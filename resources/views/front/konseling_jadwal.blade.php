@@ -101,7 +101,7 @@
 
 				<div id="timeModal" class="hidden field">
 					<div class="border border-red-100 rounded-md p-4 w-full mx-auto max-w-2xl">
-						<label class="label">Pilih Jam Konseling</label>
+						<label class="label">Pilih Jam Konseling <span id="judul_modal"></span></label>
 						<div class="field-body">
 							<div class="field">
 								<div class="control">
@@ -153,6 +153,8 @@
 	const modal = document.getElementById('timeModal');
 	const psikolog = document.getElementById('psikolog_id');
 	const utama = document.getElementById('dateUtamaDiv');
+
+	const judulModal = document.getElementById("judul_modal");
 
 	// Variabel global simpan dua pilihan
     let pilihanUtama = null;
@@ -221,6 +223,20 @@
 							$('#timeSlots').html(buttons);
 							modal.classList.remove('hidden');
 							modal.classList.add('block');
+
+							if (pilihanUtama) {
+								judulModal.innerHTML = '';
+								judulModal.textContent = 'Jadwal Alternatif';
+							} else {
+								judulModal.innerHTML = '';
+								judulModal.textContent = 'Jadwal Utama';
+							}
+
+							// alert('Silakan pilih waktu yang tersedia untuk tanggal ini.');
+							Swal.fire({
+								text: "Silakan pilih waktu/sesi yang tersedia untuk tanggal ini di bawah.",
+								icon: "info"
+							});
 						} else {
 							modal.classList.add('hidden');
 							modal.classList.remove('block');
@@ -288,7 +304,7 @@
 			// alert('Tanggal utama dan alternatif tidak boleh sama.');
 			Swal.fire({
 				text: "Jadwal utama dan alternatif tidak boleh sama.",
-				icon: "info"
+				icon: "warning"
 			});
 			modal.classList.add('hidden');
 			modal.classList.remove('block');
