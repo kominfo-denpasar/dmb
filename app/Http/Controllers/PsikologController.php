@@ -452,9 +452,12 @@ class PsikologController extends AppBaseController
 			->select(
 				'keluhans.id', 
 				'keluhans.created_at', 
+				'keluhans.jadwal_alt2_tgl as tgl_konseling', 
+				'keluhans.jadwal_alt2_jam as jam_konseling', 
 				'keluhans.status', 
 				'masyarakats.nama', 
 				'masyarakats.hp')
+			->orderBy('keluhans.status', 'asc')
 			->orderBy('keluhans.created_at', 'desc')
 			->get();
 
@@ -465,6 +468,9 @@ class PsikologController extends AppBaseController
         })
 		->editColumn('created_at', function($sql){
             return $tanggal = date('d/m/Y', strtotime($sql->created_at));
+        })
+		->editColumn('tgl_konseling', function($sql){
+            return $tanggal = date('d/m/Y', strtotime($sql->created_at)) . ', Sesi ' . $sql->jam_konseling;
         })
         ->editColumn('status', function($sql){
             if($sql->status==0) {

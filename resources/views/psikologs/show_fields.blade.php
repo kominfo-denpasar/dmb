@@ -66,8 +66,9 @@
 					<thead>
 						<tr>
 							<th style="width:10%"></th>
-							<th>Tanggal Registrasi</th>
+							<th>Registrasi</th>
 							<th>Nama Klien</th>
+							<th>Jadwal Konseling</th>
 							<th>Status</th>
 						</tr>
 					</thead>
@@ -95,6 +96,7 @@
 				{ data: "aksi", name:"aksi", orderable:false},
 				{ data: "created_at", name:"created_at"},
 				{ data: "nama", name:"nama"},
+				{ data: "tgl_konseling", name:"tgl_konseling"},
 				{ data: "status", name:"status"},
 			],
 			"language": {
@@ -117,7 +119,7 @@
 				"targets"  : 'no-sort',
 			}],
 			//"dom": "ltrip",
-			order: [[ 3, "desc" ]]
+			order: [[ 4, "desc" ]]
 		});
 		// pencarian
 		$('#status_filter').on('change', function(){
