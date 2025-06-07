@@ -16,7 +16,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
+
 use App\Traits\dateTransform;
+use App\Traits\kuotaTrait;
 
 use Carbon\Carbon;
 
@@ -26,6 +28,7 @@ class FrontController extends Controller
 {
 
 	use dateTransform;
+	use kuotaTrait;
 
 	/**
 	 * Create a new controller instance.
@@ -506,12 +509,22 @@ class FrontController extends Controller
 			// jika sudah mengisi keluhan tetapi belum mengisi jadwal
 
 			// get data master psikolog
-			$psikolog = Psikolog::where('status', 1)
+			$psikologList = Psikolog::where('status', 1)
 				->get();
+
+			$psikologTersedia = [];
+
+			foreach ($psikologList as $psikolog) {
+				$cek = $this->cekKuotaPsikolog($psikolog->id);
+
+				if ($cek['status']) {
+					$psikologTersedia[] = $psikolog;
+				}
+			}
 
 			return view('front.konseling_jadwal', [
 				'masyarakat' => $masyarakat,
-				'psikolog' => $psikolog
+				'psikolog' => $psikologTersedia
 			]);
 		} else {
 			return redirect()->route('front.survei-intro');
