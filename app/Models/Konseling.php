@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\keluhan;
+use App\Models\Masyarakat;
 
 class Konseling extends Model
 {
@@ -33,6 +35,12 @@ class Konseling extends Model
     public static array $rules = [
         
     ];
+
+    public function masyarakat()
+    {
+        return $this->belongsTo(Masyarakat::class, 'mas_id', 'token');
+    }
+
 
     
 }

@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Konseling;
+use App\Models\Masyarakat;
 
 class keluhan extends Model
 {
@@ -45,6 +47,11 @@ class keluhan extends Model
         'jadwal_id' => 'required',
         'mas_id' => 'required'
     ];
+
+    public function masyarakat()
+    {
+        return $this->belongsTo(Masyarakat::class, 'mas_id', 'token');
+    }
 
     
 }

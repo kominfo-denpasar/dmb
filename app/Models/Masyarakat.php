@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\keluhan;
+use App\Models\Konseling;
 
 class Masyarakat extends Model
 {
@@ -50,6 +52,16 @@ class Masyarakat extends Model
         'hp' => 'required',
         'email' => 'required'
     ];
+
+    public function keluhan()
+    {
+        return $this->hasMany(keluhan::class, 'mas_id', 'token');
+    }
+
+    public function konseling()
+    {
+        return $this->hasMany(Konseling::class, 'mas_id', 'token');
+    }
 
     
 }
