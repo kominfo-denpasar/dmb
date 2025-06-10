@@ -50,9 +50,9 @@
 									<!-- <span class="icon"><i class="mdi mdi-account-multiple"></i></span>
 									Clients -->
 								</p>
-								<a href="#" class="card-header-icon">
+								<!-- <a href="#" class="card-header-icon">
 									<span class="icon"><i class="mdi mdi-printer"></i></span>
-								</a>
+								</a> -->
 							</header>
 							<div class="card-content">
 								<table>
