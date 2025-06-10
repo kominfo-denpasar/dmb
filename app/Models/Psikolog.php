@@ -49,6 +49,11 @@ class Psikolog extends Model
         'alamat_praktek' => 'required'
     ];
 
+    public function jadwal()
+    {
+        return $this->hasMany(\App\Models\jadwal::class);
+    }
+
     public function setNikAttribute($value)
     {
         $this->attributes['nik'] = Crypt::encryptString($value);

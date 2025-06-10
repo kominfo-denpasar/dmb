@@ -43,6 +43,7 @@ class jadwal extends Model
     {
         return $this->belongsTo(\App\Models\psikolog::class, 'psikolog_id');
     }
+    
     public function konseling()
     {
         return $this->hasMany(\App\Models\konseling::class, 'jadwal_id');

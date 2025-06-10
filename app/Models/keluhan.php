@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Konseling;
 use App\Models\Masyarakat;
+use App\Models\Psikolog;
 
 class keluhan extends Model
 {
@@ -51,6 +52,11 @@ class keluhan extends Model
     public function masyarakat()
     {
         return $this->belongsTo(Masyarakat::class, 'mas_id', 'token');
+    }
+
+    public function psikolog()
+    {
+        return $this->belongsTo(Psikolog::class, 'psikolog_id', 'id');
     }
 
     
