@@ -8,74 +8,76 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Http;
 use Spatie\Activitylog\Facades\Activity;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\PhpMailController;
 
 class Controller extends BaseController
 {
-    use AuthorizesRequests, ValidatesRequests;
+	use AuthorizesRequests, ValidatesRequests;
 
-    //fungsi kirim notif whatsapp
-    public function notif_wa($data) {
-        $curl = curl_init();
-        $token = "7NLXy6ZPgPAQGuu92x9lySyKvLG2XFszSu1tufAkAs9QBOXaxt0n11Y9lzXcm3hp.VS1IlTNO";
-        
-        curl_setopt($curl, CURLOPT_HTTPHEADER,
-            array(
-                "Authorization: $token",
-            )
-        );
-        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
-        curl_setopt($curl, CURLOPT_URL,  "https://jogja.wablas.com/api/send-message");
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        $result = curl_exec($curl);
-        curl_close($curl);
-        
-        // echo "<pre>";
-        // print_r($result);
-    }
+	//fungsi kirim notif whatsapp
+	public function notif_wa($data) {
+		$curl = curl_init();
+		$token = "7NLXy6ZPgPAQGuu92x9lySyKvLG2XFszSu1tufAkAs9QBOXaxt0n11Y9lzXcm3hp.VS1IlTNO";
+		
+		curl_setopt($curl, CURLOPT_HTTPHEADER,
+			array(
+				"Authorization: $token",
+			)
+		);
+		curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+		curl_setopt($curl, CURLOPT_URL,  "https://jogja.wablas.com/api/send-message");
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
+		$result = curl_exec($curl);
+		curl_close($curl);
+		
+		// echo "<pre>";
+		// print_r($result);
+	}
 
-    // kirim email
-    // public function notif_email($data)
-    // {
-    //     try {
-    //         $mailController = new PhpMailController();
+	// kirim email
+	// public function notif_email($data)
+	// {
+	//     try {
+	//         $mailController = new PhpMailController();
 	// 	    $mailController->RescheduleKonseling($data);
-    //         // $mailController->sendEmail($data);
-    //         // return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
-    //     } catch (\Exception $e) {
-    //         Log::error('Email sending failed: ' . $e->getMessage());
-    //         // return response()->json(['status' => 'error', 'message' => 'Failed to send email'], 500);
-    //     }
-    // }
+	//         // $mailController->sendEmail($data);
+	//         // return response()->json(['status' => 'success', 'message' => 'Email sent successfully']);
+	//     } catch (\Exception $e) {
+	//         Log::error('Email sending failed: ' . $e->getMessage());
+	//         // return response()->json(['status' => 'error', 'message' => 'Failed to send email'], 500);
+	//     }
+	// }
 
-    // public function notif_wa($data)
-    // {
+	// public function notif_wa($data)
+	// {
 
-    //     try {
-    //         $response = Http::withBasicAuth(
-    //             env('WA_API_AUTH_USER'), 
-    //             env('WA_API_AUTH_PASS'))
-    //         ->post(env('WA_API_URL'), $data);
+	//     try {
+	//         $response = Http::withBasicAuth(
+	//             env('WA_API_AUTH_USER'), 
+	//             env('WA_API_AUTH_PASS'))
+	//         ->post(env('WA_API_URL'), $data);
 
-    //         // $responseData = $response->json();
+	//         // $responseData = $response->json();
 
-    //         if ($response->successful()) {
-    //             return $response->json();
-    //         }
+	//         if ($response->successful()) {
+	//             return $response->json();
+	//         }
 
-    //         Log::error('WA Response failed: ' . $response->body());
+	//         Log::error('WA Response failed: ' . $response->body());
 
-    //         Activity::causedBy('System')
-    //             ->log('WA Response failed: ' . $response->body());
+	//         Activity::causedBy('System')
+	//             ->log('WA Response failed: ' . $response->body());
 
-    //     } catch (\Exception $e) {
-    //         Log::error('WA Request error: ' . $e->getMessage());
-    //     }
-    // }
+	//     } catch (\Exception $e) {
+	//         Log::error('WA Request error: ' . $e->getMessage());
+	//     }
+	// }
 
-    //konversi penyesuaian nomer telp
+	//konversi penyesuaian nomer telp
 	public function normalizePhoneNumber($phone)
 	{
 		// Hilangkan spasi, tanda +, tanda -, titik, dan karakter non-digit
@@ -95,8 +97,28 @@ class Controller extends BaseController
 		return $phone;
 	}
 
-    public function getUser(){
-        // ambil data user
-        return $data = config('roles.models.defaultUser')::find(Auth::id());
-    }
+	public function simpanFile($file, $folderPrefix, $monthFolder, $oldFileName = null)
+	{
+		// Hapus file lama jika ada
+		if ($oldFileName) {
+			$oldPath = "uploads/{$oldFileName}";
+			if (Storage::disk('public')->exists($oldPath)) {
+				Storage::disk('public')->delete($oldPath);
+			}
+		}
+		
+		$fileName = time() . '_' . $file->getClientOriginalName();
+		$path = "uploads/{$folderPrefix}/{$monthFolder}/{$fileName}";
+
+		if (!Storage::disk('public')->put($path, file_get_contents($file))) {
+			return false;
+		}
+
+		return $fileName; // Return path jika ingin disimpan ke DB
+	}
+
+	public function getUser(){
+		// ambil data user
+		return $data = config('roles.models.defaultUser')::find(Auth::id());
+	}
 }

@@ -601,6 +601,13 @@
 															</div>
 														</div>
 														<div class="form-group row">
+															<label for="inputExperience" class="col-sm-2 col-form-label">Anamnesis</label>
+															<div class="col-sm-10">
+																<textarea name="anamnesis" class="form-control" id="inputExperience" placeholder="anamnesis" @if($data->status==0)disabled @endif>{!!$konseling['anamnesis']!!}</textarea>
+																<small>Inputkan data berdasarkan field yang diminta</small>
+															</div>
+														</div>
+														<div class="form-group row">
 															<label for="inputExperience" class="col-sm-2 col-form-label">Kesimpulan</label>
 															<div class="col-sm-10">
 																<textarea name="kesimpulan" class="form-control" id="inputExperience" placeholder="kesimpulan" @if($data->status==0)disabled @endif>{!!$konseling['kesimpulan']!!}</textarea>
@@ -615,7 +622,7 @@
 															</div>
 														</div>
 														<div class="form-group row">
-															<label for="customFile" class="col-sm-2 col-form-label">Dokumentasi</label>
+															<label for="customFile" class="col-sm-2 col-form-label">Dokumentasi (Gambar)</label>
 
 															<div class="col-sm-10">
 																@if($konseling['berkas_pendukung'])
@@ -637,6 +644,43 @@
 																<small>Input file yang berekstensi jpg, jpeg dan png</small>
 															</div>
 														</div>
+
+														<div class="form-group row">
+															<label for="customFile" class="col-sm-2 col-form-label">Laporan Pendukung</label>
+
+															<div class="col-sm-10">
+																@if($konseling['laporan'])
+																	@php
+																		$laporanPath = 'storage/uploads/laporan/' . $konseling['laporan'];
+																		$fullPath = storage_path('app/public/uploads/laporan/' . $konseling['laporan']);
+																		$ext = pathinfo($konseling['laporan'], PATHINFO_EXTENSION);
+																	@endphp
+
+																	@if(file_exists($fullPath))
+																		@if($ext === 'pdf')
+																			<iframe src="{{ asset($laporanPath) }}" width="100%" height="500px" frameborder="0"></iframe>
+																		@elseif(in_array($ext, ['jpg', 'jpeg', 'png']))
+																			<img class="img-fluid" src="{{ asset($laporanPath) }}">
+																		@else
+																			<p><a href="{{ asset($laporanPath) }}" target="_blank">Lihat File {{ strtoupper($ext) }}</a></p>
+																		@endif
+																	@else
+																		<img class="img-fluid" src="{{ asset('img/pp_user.jpg') }}">
+																	@endif
+																@endif
+
+																<div class="custom-file mt-2">
+																	@if($data->status != 0)
+																		<input type="file" name="laporan" class="custom-file-input form-control" id="customFile">
+																		<label class="custom-file-label" for="customFile">Pilih Berkas</label>
+																	@else
+																		<small>Tidak dapat mengunggah berkas dalam status ini</small>
+																	@endif
+																</div>
+																<small>Input file yang berekstensi pdf, docx, xlsx</small>
+															</div>
+														</div>
+														
 														<!-- <div class="form-group row">
 															<div class="offset-sm-2 col-sm-10">
 																<div class="checkbox">

@@ -149,6 +149,8 @@ class HomePsikologController extends Controller
 					'kesimpulan',
 					'saran',
 					'berkas_pendukung', 
+					'anamnesis',
+					'laporan'
 				)
 				->first();
 
@@ -156,7 +158,9 @@ class HomePsikologController extends Controller
 					'hasil' => $konseling->hasil,
 					'kesimpulan' => $konseling->kesimpulan,
 					'saran' => $konseling->saran,
-					'berkas_pendukung' => $konseling->berkas_pendukung
+					'anamnesis' => $konseling->anamnesis,
+					'berkas_pendukung' => $konseling->berkas_pendukung,
+					'laporan' => $konseling->laporan
 				];
 
 				// get data evaluasi
@@ -403,26 +407,68 @@ class HomePsikologController extends Controller
 			'keluhan_id'    => 'required',
 			'konseling_id'  => 'required',
 			'hasil'     	=> 'required',
+			'anamnesis'     => 'required',
 			'masalah'     	=> 'required|array',
 			'kesimpulan'    => 'required',
 			'saran'     	=> 'required',
-			'berkas_pendukung'     	=> 'required|file|mimes:jpg,jpeg,png|max:2048'
+			'berkas_pendukung'     	=> 'required|file|mimes:jpg,jpeg,png|max:2048',
+			'laporan'     			=> 'required|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:2048'
+
 		]);
 
-		// dd($request->all());
-		// simpan file berkas pendukung menggunakan storage
-		$berkas_pendukung = $request->file('berkas_pendukung');
-		$berkas_pendukung_name = time().'_'.$berkas_pendukung->getClientOriginalName();
 
-		$year_folder = date("Y");
-		$month_folder = $year_folder . '/' . date("m");
+		$monthFolder = date('Y') . '/' . date('m');
 
-		$path = 'uploads/berkas_pendukung/'.$month_folder.'/'.$berkas_pendukung_name;
+		// ambil data lama
+		$old_file = Konseling::where([
+			'psikolog_id' => $this->getUser()->psikolog_id,
+			'mas_id' => $request->mas_id,
+			'status' => 1
+		]);
 
-		$file_content = file_get_contents($berkas_pendukung);
-		if(!Storage::disk('public')->put($path, $file_content)) {
-			return false;
+		// Simpan berkas pendukung
+		if ($request->hasFile('berkas_pendukung')) {
+			$berkasPath = $this->simpanFile($request->file('berkas_pendukung'), 'berkas_pendukung', $monthFolder, $old_file->berkas_pendukung);
+			if (!$berkasPath) {
+				// return response()->json(['error' => 'Gagal menyimpan berkas pendukung'], 500);
+				return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal menyimpan berkas pendukung');
+			}
 		}
+
+		// Simpan laporan
+		if ($request->hasFile('laporan')) {
+			$laporanPath = $this->simpanFile($request->file('laporan'), 'laporan', $monthFolder, $old_file->laporan);
+			if (!$laporanPath) {
+				// return response()->json(['error' => 'Gagal menyimpan laporan'], 500);
+				return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal menyimpan laporan');
+			}
+		}
+
+		// dd($request->all());
+		// // simpan file berkas pendukung menggunakan storage
+		// $berkas_pendukung = $request->file('berkas_pendukung');
+		// $berkas_pendukung_name = time().'_'.$berkas_pendukung->getClientOriginalName();
+
+		// $year_folder = date("Y");
+		// $month_folder = $year_folder . '/' . date("m");
+
+		// $path = 'uploads/berkas_pendukung/'.$month_folder.'/'.$berkas_pendukung_name;
+
+		// $file_content = file_get_contents($berkas_pendukung);
+		// if(!Storage::disk('public')->put($path, $file_content)) {
+		// 	return false;
+		// }
+
+		// // simpan file laporan
+		// $laporan = $request->file('laporan');
+		// $laporan_name = time().'_'.$laporan->getClientOriginalName();
+
+		// $path_laporan = 'uploads/laporan/'.$month_folder.'/'.$laporan_name;
+
+		// $file_content = file_get_contents($laporan);
+		// if(!Storage::disk('public')->put($path_laporan, $file_content)) {
+		// 	return false;
+		// }
 
 		// $berkas_pendukung->move(public_path('uploads/berkas_pendukung'), $berkas_pendukung_name);
 
@@ -433,9 +479,11 @@ class HomePsikologController extends Controller
 			'status' => 1
 		])->update([
 			'hasil' => $request->hasil,
+			'anamnesis' => $request->anamnesis,
 			'kesimpulan' => $request->kesimpulan,
 			'saran' => $request->saran,
-			'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
+			'berkas_pendukung' => $monthFolder.'/'.$berkasPath,
+			'laporan' => $monthFolder.'/'.$laporanPath,
 			'keluhan_id' => $request->keluhan_id,
 			'status' => 2,
 			'updated_at' => Carbon::now()
