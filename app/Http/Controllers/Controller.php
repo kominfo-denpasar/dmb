@@ -101,7 +101,8 @@ class Controller extends BaseController
 	{
 		// Hapus file lama jika ada
 		if ($oldFileName) {
-			$oldPath = "uploads/{$oldFileName}";
+			$oldPath = "uploads/{$folderPrefix}/{$oldFileName}";
+
 			if (Storage::disk('public')->exists($oldPath)) {
 				Storage::disk('public')->delete($oldPath);
 			}

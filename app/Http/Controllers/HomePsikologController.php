@@ -415,7 +415,7 @@ class HomePsikologController extends Controller
 			'kesimpulan'    => 'required',
 			'saran'     	=> 'required',
 			'berkas_pendukung'     	=> 'required|file|mimes:jpg,jpeg,png|max:2048',
-			'laporan'     			=> 'required|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:2048'
+			'laporan'     			=> 'required|file|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:2048'
 
 		]);
 
@@ -427,7 +427,7 @@ class HomePsikologController extends Controller
 			'psikolog_id' => $this->getUser()->psikolog_id,
 			'mas_id' => $request->mas_id,
 			'status' => 1
-		]);
+		])->first();
 
 		// Simpan berkas pendukung
 		if ($request->hasFile('berkas_pendukung')) {
@@ -446,34 +446,6 @@ class HomePsikologController extends Controller
 				return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal menyimpan laporan');
 			}
 		}
-
-		// dd($request->all());
-		// // simpan file berkas pendukung menggunakan storage
-		// $berkas_pendukung = $request->file('berkas_pendukung');
-		// $berkas_pendukung_name = time().'_'.$berkas_pendukung->getClientOriginalName();
-
-		// $year_folder = date("Y");
-		// $month_folder = $year_folder . '/' . date("m");
-
-		// $path = 'uploads/berkas_pendukung/'.$month_folder.'/'.$berkas_pendukung_name;
-
-		// $file_content = file_get_contents($berkas_pendukung);
-		// if(!Storage::disk('public')->put($path, $file_content)) {
-		// 	return false;
-		// }
-
-		// // simpan file laporan
-		// $laporan = $request->file('laporan');
-		// $laporan_name = time().'_'.$laporan->getClientOriginalName();
-
-		// $path_laporan = 'uploads/laporan/'.$month_folder.'/'.$laporan_name;
-
-		// $file_content = file_get_contents($laporan);
-		// if(!Storage::disk('public')->put($path_laporan, $file_content)) {
-		// 	return false;
-		// }
-
-		// $berkas_pendukung->move(public_path('uploads/berkas_pendukung'), $berkas_pendukung_name);
 
 		// update data konseling
 		$konseling = Konseling::where([
@@ -534,56 +506,48 @@ class HomePsikologController extends Controller
 			'masalah'     	=> 'required|array',
 			'kesimpulan'    => 'required',
 			'saran'     	=> 'required',
-			'berkas_pendukung'     	=> 'file|mimes:jpg,jpeg,png|max:2048'
+			'berkas_pendukung'     	=> 'file|mimes:jpg,jpeg,png|max:2048',
+			'laporan'     			=> 'file|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:2048'
 		]);
 
-		// jika ada file berkas pendukung
-		if($request->hasFile('berkas_pendukung')) {
-			// hapus file lama
-			$year_folder = date("Y");
-			$month_folder = $year_folder . '/' . date("m");
 
-			$old_berkas_pendukung = Konseling::where('id', $request->konseling_id)->first();
-			$filePath = storage_path('app/public/uploads/berkas_pendukung/'.$old_berkas_pendukung->berkas_pendukung);
-			if(file_exists($filePath) && $old_berkas_pendukung->berkas_pendukung) {
-				unlink($filePath);
-			}
-			
-			// simpan file berkas pendukung menggunakan storage
-			$berkas_pendukung = $request->file('berkas_pendukung');
-			$berkas_pendukung_name = time().'_'.$berkas_pendukung->getClientOriginalName();
+		$monthFolder = date('Y') . '/' . date('m');
 
-			$path = 'uploads/berkas_pendukung/'.$month_folder.'/'.$berkas_pendukung_name;
+		// Ambil data konseling lama
+		$konseling = Konseling::find($request->konseling_id);
 
-			$file_content = file_get_contents($berkas_pendukung);
-			if(!Storage::disk('public')->put($path, $file_content)) {
-				return false;
+		// Jika ada file berkas pendukung baru
+		if ($request->hasFile('berkas_pendukung')) {
+
+			$berkasPath = $this->simpanFile($request->file('berkas_pendukung'), 'berkas_pendukung', $monthFolder, $konseling->berkas_pendukung);
+			if (!$berkasPath) {
+				// return response()->json(['error' => 'Gagal menyimpan berkas pendukung'], 500);
+				return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal menyimpan berkas pendukung');
 			}
 
-			$konseling = Konseling::where([
-				'id' => $request->konseling_id
-			])->update([
-				'hasil' => $request->hasil,
-				'kesimpulan' => $request->kesimpulan,
-				'saran' => $request->saran,
-				'berkas_pendukung' => $month_folder.'/'.$berkas_pendukung_name,
-				'keluhan_id' => $request->keluhan_id,
-				'status' => 2,
-				'updated_at' => Carbon::now()
-			]);
-		} else {
-			// update data konseling tanpa berkas pendukung
-			$konseling = Konseling::where([
-				'id' => $request->konseling_id
-			])->update([
-				'hasil' => $request->hasil,
-				'kesimpulan' => $request->kesimpulan,
-				'keluhan_id' => $request->keluhan_id,
-				'saran' => $request->saran,
-				'status' => 2,
-				'updated_at' => Carbon::now()
-			]);
+			// Update data konseling dengan file baru
+			$konseling->berkas_pendukung = $monthFolder . '/' . $berkasPath;
 		}
+
+		// Jika ada file laporan baru
+		if ($request->hasFile('laporan')) {
+			$laporanPath = $this->simpanFile($request->file('laporan'), 'laporan', $monthFolder, $konseling->laporan);
+			if (!$laporanPath) {
+				// return response()->json(['error' => 'Gagal menyimpan laporan'], 500);
+				return redirect()->route('backend.konseling', $request->keluhan_id)->with('error', 'Gagal menyimpan laporan');
+			}
+
+			$konseling->laporan = $monthFolder . '/' . $laporanPath;
+		}
+
+		// Update field lain (baik ada file baru atau tidak)
+		$konseling->hasil = $request->hasil;
+		$konseling->kesimpulan = $request->kesimpulan;
+		$konseling->saran = $request->saran;
+		$konseling->keluhan_id = $request->keluhan_id;
+		$konseling->status = 2;
+		$konseling->updated_at = Carbon::now();
+		$konseling->save();
 
 		// update data keluhan
 		$keluhan = keluhan::find($request->keluhan_id);
@@ -646,11 +610,6 @@ class HomePsikologController extends Controller
 				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')." jam $keluhan->jadwal_alt2_jam WITA telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut atau mendaftar ulang.\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
-
-			// Kirim email
-			$mailController = new PhpMailController();
-			$mailController->BatalKonseling($masyarakat,$keluhan);
-
 
 			// redirect ke halaman konseling
 			return redirect()->route('backend.konseling', $id)->with('success', 'Berhasil melakukan pembatalan konseling');
