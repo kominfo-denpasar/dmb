@@ -211,7 +211,7 @@
 														<input type="hidden" name="jadwal_alt2_jam" value="{{$data->jadwal_alt_jam}}">
 														<button type="submit" class="btn btn-info">Konfirmasi Jadwal Alternatif</button>
 													</form>
-														<a class="btn btn-danger" target="_BLANK" href="//wa.me/62{{$data->hp}}"><i class="fas fa-phone"></i> &nbsp;Hubungi Klien</a>
+														<a class="btn btn-danger" target="_BLANK" href="//wa.me/{{$data->hp}}"><i class="fas fa-phone"></i> &nbsp;Hubungi Klien</a>
 												</div>
 											</div>
 										</div>
