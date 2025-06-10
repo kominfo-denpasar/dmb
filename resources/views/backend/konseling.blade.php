@@ -207,8 +207,8 @@
 														@csrf
 														<input type="hidden" name="keluhan_id" value="{{$data->keluhan_id}}">
 														<input type="hidden" name="jenis" value="alternatif">
-														<input type="hidden" name="jadwal_alt2_tgl" value="{{$data->jadwal_alt_tgl}}">
-														<input type="hidden" name="jadwal_alt2_jam" value="{{$data->jadwal_alt_jam}}">
+														<input type="hidden" name="jadwal_alt_tgl" value="{{$data->jadwal_alt_tgl}}">
+														<input type="hidden" name="jadwal_alt_jam" value="{{$data->jadwal_alt_jam}}">
 														<button type="submit" class="btn btn-info">Konfirmasi Jadwal Alternatif</button>
 													</form>
 														<a class="btn btn-danger" target="_BLANK" href="//wa.me/{{$data->hp}}"><i class="fas fa-phone"></i> &nbsp;Hubungi Klien</a>
@@ -293,7 +293,7 @@
 															<td><b>{{$data->jadwal_alt2_jam}} WITA</b></td>
 														</tr>
 														<tr>
-															<td class="text-right">Waktu Dikonfirmasi</td>
+															<td class="text-right"><small>Waktu Dikonfirmasi</small></td>
 															<td><small>{{ \Carbon\Carbon::parse($data->diupdate)->format('d/m/Y - H:i')}} WITA</small></td>
 														</tr>
 													</tbody>
