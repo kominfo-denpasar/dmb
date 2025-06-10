@@ -643,7 +643,7 @@ class HomePsikologController extends Controller
 			// kirim notifikasi ke masyarakat
 			$data = [
 				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal $keluhan->jadwal_alt2_tgl jam $keluhan->jadwal_alt2_jam telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')." jam $keluhan->jadwal_alt2_jam WITA telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
@@ -682,7 +682,9 @@ class HomePsikologController extends Controller
 		// dd($request->all());
 
 		// update keluhan dan konseling
-		$keluhan = keluhan::find($request->keluhan_id);
+		$keluhan = keluhan::with('masyarakat')
+			->find($request->keluhan_id);
+
 		$keluhan->jadwal_alt2_tgl = $request->jadwal_alt2_tgl;
 		$keluhan->jadwal_alt2_jam = $request->jadwal_alt2_jam;
 		$keluhan->status = 1;
@@ -698,12 +700,9 @@ class HomePsikologController extends Controller
 		$konseling->save(['timestamps' => FALSE]);
 
 		// kirim notifikasi ke masyarakat
-		// get masyarakat
-		$masyarakat = Masyarakat::where('token', $keluhan->mas_id)->first();
-
 		$data = [
-			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-			'message' => "Halo $masyarakat->nama, jadwal konseling Anda telah direschedule menjadi:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+			'phone' => $this->normalizePhoneNumber($keluhan['masyarakat']->hp),
+			'message' => "Halo ".$keluhan['masyarakat']->nama.", jadwal konseling Anda telah di-reschedule menjadi:\n\nTanggal: ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')."\nJam: ".$keluhan->jadwal_alt2_jam." WITA\n\nMohon untuk datang ke lokasi pada tanggal terakhir yang telah di-reschedule.\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
 		];
 		$this->notif_wa($data);
 
