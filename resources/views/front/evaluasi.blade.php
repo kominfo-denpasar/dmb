@@ -103,10 +103,10 @@
 							<div class="control">
 								<select name="nilai_keluhan" class="w-full p-2 input" required="">
 									<option value="">Pilih</option>
-									<option value="4">Sangat Membantu</option>
-									<option value="3">Membantu</option>
-									<option value="2">Cukup Membantu</option>
-									<option value="1">Kurang Membantu</option>
+									<option value="4">Sangat mengganggu</option>
+									<option value="3">Mengganggu</option>
+									<option value="2">Cukup Mengganggu</option>
+									<option value="1">Tidak Mengganggu</option>
 								</select>
 							</div>
 							<p class="help">Pilih salah satu</p>
