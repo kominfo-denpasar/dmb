@@ -148,7 +148,7 @@
 													<tbody>
 														<tr>
 															<td style="width:20%" class="text-right">Tanggal</td>
-															<td><b>{{ \Carbon\Carbon::parse($data->hari)->format('d/m/Y')}}</b></td>
+															<td><b>{{ \Carbon\Carbon::parse($data->jadwal_tgl)->format('d/m/Y')}}</b></td>
 														</tr>
 														<tr>
 															<td class="text-right">Jam</td>
@@ -294,7 +294,7 @@
 														</tr>
 														<tr>
 															<td class="text-right">Waktu Dikonfirmasi</td>
-															<td><b>{{ \Carbon\Carbon::parse($data->updated_at)->format('d/m/Y - h:i')}} WITA</b></td>
+															<td><small>{{ \Carbon\Carbon::parse($data->diupdate)->format('d/m/Y - H:i')}} WITA</small></td>
 														</tr>
 													</tbody>
 												</table>

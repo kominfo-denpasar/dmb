@@ -59,5 +59,15 @@ class keluhan extends Model
         return $this->belongsTo(Psikolog::class, 'psikolog_id', 'id');
     }
 
+    public function getUpdatedAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->timezone('Asia/Makassar')->toDateTimeString();
+    }
+
+    public function getCreatedAtAttribute($value)
+    {
+        return \Carbon\Carbon::parse($value)->timezone('Asia/Makassar')->toDateTimeString();
+    }
+
     
 }

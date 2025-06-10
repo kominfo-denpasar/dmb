@@ -110,6 +110,7 @@ class HomePsikologController extends Controller
 				'keluhans.*',
 				'keluhans.id as keluhan_id', 
 				'keluhans.jadwal_jam as jamnya',
+				'keluhans.updated_at as diupdate',
 				'konselings.id as konseling_id',
 				'psikologs.nama as psikolog_nama',
 				'psikologs.id as psikolog_id', 
@@ -354,39 +355,39 @@ class HomePsikologController extends Controller
 	 */
 	public function updateJadwal(Request $request)
 	{
+		$keluhan = keluhan::with(['psikolog', 'masyarakat'])->find($request->keluhan_id);
+
 		if($request->jenis=='utama') {
 			// update jadwal utama
-			$keluhan = keluhan::find($request->keluhan_id);
 			$keluhan->jadwal_alt2_tgl = $request->jadwal_tgl;
 			$keluhan->jadwal_alt2_jam = $request->jadwal_jam;
-			$keluhan->status = 1;
-			$keluhan->updated_at = Carbon::now();
-			$keluhan->save(['timestamps' => FALSE]);
+			
 		} else {
 			// update jadwal alternatif
-			$keluhan = keluhan::find($request->keluhan_id);
 			$keluhan->jadwal_alt2_tgl = $request->jadwal_alt_tgl;
 			$keluhan->jadwal_alt2_jam = $request->jadwal_alt_jam;
-			$keluhan->status = 1;
-			$keluhan->updated_at = Carbon::now();
-			$keluhan->save(['timestamps' => FALSE]);
 		}
+
+		$keluhan->status = 1;
+		$keluhan->updated_at = Carbon::now();
+		$keluhan->save(['timestamps' => FALSE]);
 
 		$konseling = Konseling::where([
 			'psikolog_id' => $this->getUser()->psikolog_id,
 			'mas_id' => $keluhan->mas_id,
 			'status' => 0
 		])->latest()->first();
+
 		$konseling->status = 1;
 		$konseling->updated_at = Carbon::now();
 		$konseling->save(['timestamps' => FALSE]);
 
 		// kirim notifikasi ke masyarakat
-		// $data = [
-		// 	'phone' => '0'.$masyarakat->hp,
-		// 	'message' => "Halo $masyarakat->nama, berikut adalah detail jadwal konseling Anda:\n\nTanggal: $masyarakat->hari\nJam: $masyarakat->jam\nPsikolog: $masyarakat->psikolog\nNomor HP Psikolog: 0$masyarakat->psikolog_hp\nAlamat Praktek Psikolog: 0$masyarakat->alamat_praktek\n\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
-		// ];
-		// $this->notif_wa($data);
+		$data = [
+			'phone' => $this->normalizePhoneNumber($keluhan['masyarakat']->hp),
+			'message' => "Halo {$keluhan['masyarakat']->nama}, berikut adalah detail jadwal konseling Anda:\n\nTanggal: ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')."\nJam: {$keluhan->jadwal_alt2_jam} WITA\nPsikolog: ".$keluhan['psikolog']->nama."\nNomor HP Psikolog: ".$keluhan['psikolog']->hp."\nAlamat Praktek Psikolog: ".$keluhan['psikolog']->alamat_praktek."\n\nSilahkan untuk datang ke lokasi praktek pada tanggal dan jam yang telah ditentukan\nSampai jumpa nanti!\n\nSalam, Denpasar Menyama Bagia"
+		];
+		$this->notif_wa($data);
 
 		// 
 		if($keluhan && $konseling) {
@@ -416,7 +417,6 @@ class HomePsikologController extends Controller
 			'saran'     	=> 'required',
 			'berkas_pendukung'     	=> 'required|file|mimes:jpg,jpeg,png|max:2048',
 			'laporan'     			=> 'required|file|mimetypes:application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:2048'
-
 		]);
 
 

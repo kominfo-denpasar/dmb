@@ -115,7 +115,7 @@ class Controller extends BaseController
 			return false;
 		}
 
-		return $fileName; // Return path jika ingin disimpan ke DB
+		return $fileName; // Return nama file beserta path untuk simpan ke DB
 	}
 
 	public function getUser(){
