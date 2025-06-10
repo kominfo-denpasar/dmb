@@ -643,7 +643,7 @@ class HomePsikologController extends Controller
 			// kirim notifikasi ke masyarakat
 			$data = [
 				'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')." jam $keluhan->jadwal_alt2_jam WITA telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut.\n\nSalam, Denpasar Menyama Bagia"
+				'message' => "Halo $masyarakat->nama, maaf konseling Anda pada tanggal ".Carbon::parse($keluhan->jadwal_alt2_tgl)->format('d/m/Y')." jam $keluhan->jadwal_alt2_jam WITA telah dibatalkan. Silakan hubungi kami untuk informasi lebih lanjut atau mendaftar ulang.\n\nSalam, Denpasar Menyama Bagia"
 			];
 			$this->notif_wa($data);
 
