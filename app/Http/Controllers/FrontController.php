@@ -404,29 +404,24 @@ class FrontController extends Controller
 		//cek otp
 		$otp = (new Otp)->validate($request->mas_id, $request->otp);
 
-		return redirect()->route('front.konseling-keluhan', $request->mas_id)
+		if ($otp->status) {
+			// ganti status masyarakat
+			$masyarakat = Masyarakat::where('token', $request->mas_id)
+				->update([
+					'status' => '1'
+				]);
+
+			return redirect()->route('front.konseling-keluhan', $request->mas_id)
 				->with([
 					'keluhan' => true
 				]);
-
-		// if ($otp->status) {
-		// 	// ganti status masyarakat
-		// 	$masyarakat = Masyarakat::where('token', $request->mas_id)
-		// 		->update([
-		// 			'status' => '1'
-		// 		]);
-
-		// 	return redirect()->route('front.konseling-keluhan', $request->mas_id)
-		// 		->with([
-		// 			'keluhan' => true
-		// 		]);
-		// } else {
-		// 	// jika salah
-		// 	return redirect()->route('front.konseling-reg')->with([
-		// 		'success' => $otp->message,
-		// 		'mas_id' => $request->mas_id
-		// 	]);
-		// }
+		} else {
+			// jika salah
+			return redirect()->route('front.konseling-reg')->with([
+				'success' => $otp->message,
+				'mas_id' => $request->mas_id
+			]);
+		}
 	}
 
 	/**

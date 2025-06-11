@@ -38,7 +38,7 @@
 							<span class="badge badge-danger navbar-badge">!</span>
 						</a>
 						<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
-						<a href="https://ndb.kreatifitas.site/dashboard/#/nc/form/4312a713-9b49-4248-8f5b-c110a87c4734" class="dropdown-item">
+						<a target="_BLANK" href="https://ndb.kreatifitas.site/dashboard/#/nc/form/4312a713-9b49-4248-8f5b-c110a87c4734" class="dropdown-item">
 							<!-- Message Start -->
 							
 							<div class="media-body">
@@ -52,7 +52,7 @@
 							<!-- Message End -->
 						</a>
 						<div class="dropdown-divider"></div>
-						<a href="https://dcloud.denpasarkota.go.id" class="dropdown-item">
+						<a target="_BLANK" href="https://dcloud.denpasarkota.go.id" class="dropdown-item">
 							<!-- Message Start -->
 							
 							<div class="media-body">
