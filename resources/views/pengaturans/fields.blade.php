@@ -1,7 +1,7 @@
-<!-- Slug Field -->
+<!-- Helper Field -->
 <div class="form-group col-sm-12">
-    {!! Form::label('slug', 'Slug:') !!}
-    {!! Form::text('slug', null, ['class' => 'form-control']) !!}
+    {!! Form::label('helper', 'Informasi:') !!}
+    <p>{{ $pengaturan->helper }}</p>
 </div>
 
 <!-- Value Field -->
@@ -18,18 +18,19 @@
 @endif
 </div>
 
+<!-- Slug Field -->
+<div class="form-group col-sm-12">
+    {!! Form::label('slug', 'Slug:') !!}
+    {!! Form::text('slug', null, ['class' => 'form-control', 'readonly']) !!}
+</div>
+
+
 
 <!-- Value Type Field -->
-<div class="form-group col-sm-12">
+<!-- <div class="form-group col-sm-12">
     {!! Form::label('value_type', 'Value Type:') !!}
     {!! Form::text('value_type', null, ['class' => 'form-control']) !!}
-</div>
-
-<!-- Helper Field -->
-<div class="form-group col-sm-12">
-    {!! Form::label('helper', 'Helper:') !!}
-    {!! Form::text('helper', null, ['class' => 'form-control']) !!}
-</div>
+</div> -->
 
 <!-- User Id Field -->
 <!-- <div class="form-group col-sm-12">
