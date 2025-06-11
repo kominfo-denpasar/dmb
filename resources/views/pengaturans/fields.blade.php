@@ -4,6 +4,20 @@
     <p>{{ $pengaturan->helper }}</p>
 </div>
 
+@if($pengaturan->slug=="kuota-psikolog")
+<!-- psikolog -->
+<div class="form-group col-sm-6">
+    {!! Form::label('psikolog', 'Psikolog:') !!}
+    <select name="psikolog_id" id="psikolog_id" class="form-control" required="">
+        <option value="semua">Semua</option>
+        @foreach($psikolog as $kat)
+            <option value="{{$kat->id}}">{{$kat->nama}}</option>
+        @endforeach
+        
+    </select>
+</div>
+@endif
+
 <!-- Value Field -->
 <div class="form-group col-sm-12">
 @if($pengaturan->value_type=="textarea")

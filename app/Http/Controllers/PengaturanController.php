@@ -9,120 +9,171 @@ use App\Repositories\PengaturanRepository;
 use Illuminate\Http\Request;
 use Flash;
 
+use App\Models\Psikolog;
+use App\Models\PsikologKuota;
+use Carbon\Carbon;
+
 class PengaturanController extends AppBaseController
 {
-    /** @var PengaturanRepository $pengaturanRepository*/
-    private $pengaturanRepository;
+	/** @var PengaturanRepository $pengaturanRepository*/
+	private $pengaturanRepository;
 
-    public function __construct(PengaturanRepository $pengaturanRepo)
-    {
-        $this->pengaturanRepository = $pengaturanRepo;
-    }
+	public function __construct(PengaturanRepository $pengaturanRepo)
+	{
+		$this->pengaturanRepository = $pengaturanRepo;
+	}
 
-    /**
-     * Display a listing of the Pengaturan.
-     */
-    public function index(Request $request)
-    {
-        $pengaturans = $this->pengaturanRepository->paginate(10);
+	/**
+	 * Display a listing of the Pengaturan.
+	 */
+	public function index(Request $request)
+	{
+		$pengaturans = $this->pengaturanRepository->paginate(10);
 
-        return view('pengaturans.index')
-            ->with('pengaturans', $pengaturans);
-    }
+		return view('pengaturans.index')
+			->with('pengaturans', $pengaturans);
+	}
 
-    /**
-     * Show the form for creating a new Pengaturan.
-     */
-    public function create()
-    {
-        return view('pengaturans.create');
-    }
+	/**
+	 * Show the form for creating a new Pengaturan.
+	 */
+	public function create()
+	{
+		return view('pengaturans.create');
+	}
 
-    /**
-     * Store a newly created Pengaturan in storage.
-     */
-    public function store(CreatePengaturanRequest $request)
-    {
-        $input = $request->all();
+	/**
+	 * Store a newly created Pengaturan in storage.
+	 */
+	public function store(CreatePengaturanRequest $request)
+	{
+		$input = $request->all();
 
-        $pengaturan = $this->pengaturanRepository->create($input);
+		$pengaturan = $this->pengaturanRepository->create($input);
 
-        Flash::success('Pengaturan saved successfully.');
+		Flash::success('Pengaturan saved successfully.');
 
-        return redirect(route('pengaturans.index'));
-    }
+		return redirect(route('pengaturans.index'));
+	}
 
-    /**
-     * Display the specified Pengaturan.
-     */
-    public function show($id)
-    {
-        $pengaturan = $this->pengaturanRepository->find($id);
+	/**
+	 * Display the specified Pengaturan.
+	 */
+	public function show($id)
+	{
+		$pengaturan = $this->pengaturanRepository->find($id);
 
-        if (empty($pengaturan)) {
-            Flash::error('Pengaturan not found');
+		if (empty($pengaturan)) {
+			Flash::error('Pengaturan not found');
 
-            return redirect(route('pengaturans.index'));
-        }
+			return redirect(route('pengaturans.index'));
+		}
 
-        return view('pengaturans.show')->with('pengaturan', $pengaturan);
-    }
+		return view('pengaturans.show')->with('pengaturan', $pengaturan);
+	}
 
-    /**
-     * Show the form for editing the specified Pengaturan.
-     */
-    public function edit($id)
-    {
-        $pengaturan = $this->pengaturanRepository->find($id);
+	/**
+	 * Show the form for editing the specified Pengaturan.
+	 */
+	public function edit($id)
+	{
+		$pengaturan = $this->pengaturanRepository->find($id);
 
-        if (empty($pengaturan)) {
-            Flash::error('Pengaturan not found');
+		if (empty($pengaturan)) {
+			Flash::error('Pengaturan not found');
 
-            return redirect(route('pengaturans.index'));
-        }
+			return redirect(route('pengaturans.index'));
+		}
 
-        return view('pengaturans.edit')->with('pengaturan', $pengaturan);
-    }
+		$psikolog = Psikolog::where('status', 1)->get();
 
-    /**
-     * Update the specified Pengaturan in storage.
-     */
-    public function update($id, UpdatePengaturanRequest $request)
-    {
-        $pengaturan = $this->pengaturanRepository->find($id);
+		return view('pengaturans.edit')->with([
+			'pengaturan' => $pengaturan,
+			'psikolog' => $psikolog
+		]);
+	}
 
-        if (empty($pengaturan)) {
-            Flash::error('Pengaturan not found');
+	/**
+	 * Update the specified Pengaturan in storage.
+	 */
+	public function update($id, UpdatePengaturanRequest $request)
+	{
+		$pengaturan = $this->pengaturanRepository->find($id);
 
-            return redirect(route('pengaturans.index'));
-        }
+		if (empty($pengaturan)) {
+			Flash::error('Pengaturan not found');
 
-        $pengaturan = $this->pengaturanRepository->update($request->all(), $id);
+			return redirect(route('pengaturans.index'));
+		}
 
-        Flash::success('Pengaturan updated successfully.');
+		// jika pilihan kuota psikolog 
+		if($request->psikolog_id!=NULL) {
+			$bulan = Carbon::now()->month;
 
-        return redirect(route('pengaturans.index'));
-    }
+			// Pisahkan string menjadi array
+			[$kuotaHari, $kuotaBulan, $kuotaTahun] = explode('|', $request->value);
+			
+			// Konversi ke integer
+			$kuotaHari = (int) $kuotaHari;
+			$kuotaBulan = (int) $kuotaBulan;
+			$kuotaTahun = (int) $kuotaTahun;
+			
+			// update kuota psikolog sesuai dengan inputan
+			if($request->psikolog_id=='semua') {
+				// jika semua dipilih update semua data psikolog
+				$kuota = PsikologKuota::where(
+					[
+						'bulan' => $bulan
+					])
+					->update([
+						'kuota_hari' => $kuotaHari,
+						'kuota_bulan' => $kuotaBulan,
+						'kuota_tahun' => $kuotaTahun,
+					]);
 
-    /**
-     * Remove the specified Pengaturan from storage.
-     *
-     * @throws \Exception
-     */
-    public function destroy($id)
-    {
-        $pengaturan = $this->pengaturanRepository->find($id);
+				$pengaturan = $this->pengaturanRepository->update($request->all(), $id);
 
-        if (empty($pengaturan)) {
-            Flash::error('Pengaturan not found');
+			} else {
+				// jika spesifik psikolog yang dipilih
+				$kuota = PsikologKuota::where(
+					[
+						'psikolog_id' => $request->psikolog_id,
+						'bulan' => $bulan
+					])
+					->update([
+						'kuota_hari' => $kuotaHari,
+						'kuota_bulan' => $kuotaBulan,
+						'kuota_tahun' => $kuotaTahun,
+					]);
+			}
+		} else {
+			$pengaturan = $this->pengaturanRepository->update($request->all(), $id);
+		}
 
-            return redirect(route('pengaturans.index'));
-        }
+		Flash::success('Pengaturan updated successfully.');
 
-        $this->pengaturanRepository->delete($id);
+		return redirect(route('pengaturans.index'));
+	}
 
-        Flash::success('Pengaturan deleted successfully.');
+	/**
+	 * Remove the specified Pengaturan from storage.
+	 *
+	 * @throws \Exception
+	 */
+	public function destroy($id)
+	{
+		$pengaturan = $this->pengaturanRepository->find($id);
 
-        return redirect(route('pengaturans.index'));
-    }
+		if (empty($pengaturan)) {
+			Flash::error('Pengaturan not found');
+
+			return redirect(route('pengaturans.index'));
+		}
+
+		$this->pengaturanRepository->delete($id);
+
+		Flash::success('Pengaturan deleted successfully.');
+
+		return redirect(route('pengaturans.index'));
+	}
 }
