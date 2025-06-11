@@ -41,7 +41,7 @@ Route::post('/validasi-otp', [App\Http\Controllers\FrontController::class, 'vali
 
 Route::get('/jadwal/psikolog/{id}', [App\Http\Controllers\FrontController::class, 'jadwalPsikolog'])->name('front.jadwal-psikolog');
 
-Route::get('/evaluasi/{id}', [App\Http\Controllers\FrontController::class, 'formulirEvaluasi'])->name('front.evaluasi');
+Route::get('/evaluasi/{id}/{keluhan}', [App\Http\Controllers\FrontController::class, 'formulirEvaluasi'])->name('front.evaluasi');
 Route::post('/evaluasi/store', [App\Http\Controllers\FrontController::class, 'storeEvaluasi'])->name('front.store-evaluasi');
 
 Route::get('/faq', [App\Http\Controllers\FrontController::class, 'faq'])->name('faq');
@@ -72,7 +72,7 @@ Route::group([
             Route::get('/konseling/{id}/laporan-detail', [App\Http\Controllers\HomePsikologController::class, 'laporanDetail'])->name('backend.laporan-detail');
             Route::get('/konseling/{id}/pdf', [App\Http\Controllers\HomePsikologController::class, 'printPdf'])->name('konseling.pdf');
 
-            Route::get('/konseling/evaluasi/{id}', [App\Http\Controllers\HomePsikologController::class, 'formEvaluasi'])->name('backend.evaluasi');
+            Route::get('/konseling/evaluasi/{id}/{keluhan}', [App\Http\Controllers\HomePsikologController::class, 'formEvaluasi'])->name('backend.evaluasi');
 
             Route::get('/konseling/batal/{id}', [App\Http\Controllers\HomePsikologController::class, 'batal'])->name('backend.konseling-batal');
             Route::post('/konseling/reschedule', [App\Http\Controllers\HomePsikologController::class, 'reschedule'])->name('backend.konseling-reschedule');

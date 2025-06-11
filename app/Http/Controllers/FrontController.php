@@ -813,7 +813,7 @@ class FrontController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
-	public function formulirEvaluasi($id)
+	public function formulirEvaluasi($id, $keluhan)
 	{
 		//ambil data join masyarakat dan keluhan
 		$masyarakat = Masyarakat::join('keluhans', 'masyarakats.token', '=', 'keluhans.mas_id')
@@ -822,21 +822,20 @@ class FrontController extends Controller
 				'masyarakats.nik', 
 				'masyarakats.nama', 
 				'masyarakats.hp', 
-				'keluhans.id as keluhan_id', 
+				'keluhans.id as keluhan_id',
 				'psikologs.id as psikolog_id',
 				'psikologs.nama as psikolog',
 				'psikologs.alamat_praktek',
 				'psikologs.hp as psikolog_hp')
 			->where([
-				'masyarakats.token' => $id
+				'masyarakats.token' => $id,
+				'keluhans.id' => $keluhan
 			])
 			->where(function($query) {
 				$query->where('keluhans.status', 1)
 					->orWhere('keluhans.status', 2);
 			})
 			->first();
-
-		// dd($masyarakat);
 
 		if($masyarakat) {
 			// jika status konseling masih proses dan sudah selesai

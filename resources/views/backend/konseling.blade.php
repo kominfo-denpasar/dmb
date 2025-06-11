@@ -518,7 +518,7 @@
 												@endif
 												<div class="btn-group float-right">
 													@if($evaluasi==null)
-													<a href="{{route('backend.evaluasi', $data->token)}}" class="btn btn-primary">
+													<a href="{{route('backend.evaluasi', [$data->token, $data->keluhan_id])}}" class="btn btn-primary">
 													@else
 													<a class="btn btn-primary disabled" style="display: none;">
 													@endif

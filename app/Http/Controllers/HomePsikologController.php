@@ -282,7 +282,7 @@ class HomePsikologController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
-	public function formEvaluasi($id)
+	public function formEvaluasi($id, $keluhan)
 	{
 		// dd($id);
 		// trigger kirim pesan ke klien untuk mengisi form evaluasi
@@ -292,7 +292,7 @@ class HomePsikologController extends Controller
 
 		$data = [
 			'phone' => $this->normalizePhoneNumber($masyarakat->hp),
-			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', $id)."\n\nSalam, Denpasar Menyama Bagia"
+			'message' => "Halo $masyarakat->nama, kami mohon bantuan Anda untuk mengisi formulir evaluasi konseling yang telah Anda lakukan. Silakan klik link berikut untuk mengisi formulir evaluasi: ".route('front.evaluasi', [$id, $keluhan])."\n\nSalam, Denpasar Menyama Bagia"
 		];
 		$this->notif_wa($data);
 
