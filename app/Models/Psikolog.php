@@ -54,6 +54,11 @@ class Psikolog extends Model
         return $this->hasMany(\App\Models\jadwal::class);
     }
 
+    public function psikologKuota()
+    {
+        return $this->hasMany(\App\Models\PsikologKuota::class);
+    }
+
     public function setNikAttribute($value)
     {
         $this->attributes['nik'] = Crypt::encryptString($value);

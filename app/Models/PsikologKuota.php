@@ -28,5 +28,10 @@ class PsikologKuota extends Model
         'psikolog_id' => 'required'
     ];
 
+    public function psikolog()
+    {
+        return $this->belongsTo(\App\Models\psikolog::class, 'psikolog_id');
+    }
+
     
 }

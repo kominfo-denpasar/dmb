@@ -6,12 +6,12 @@
 
 @if($pengaturan->slug=="kuota-psikolog")
 <!-- psikolog -->
-<div class="form-group col-sm-6">
+<div class="form-group col-sm-12">
     {!! Form::label('psikolog', 'Psikolog:') !!}
     <select name="psikolog_id" id="psikolog_id" class="form-control" required="">
         <option value="semua">Semua</option>
         @foreach($psikolog as $kat)
-            <option value="{{$kat->id}}">{{$kat->nama}}</option>
+            <option value="{{$kat->id}}">{{$kat->nama}} | Kuota: Hari ({{$kat['PsikologKuota'][0]['kuota_hari']}}), Bulan ({{$kat['PsikologKuota'][0]['kuota_bulan']}}), Tahun ({{$kat['PsikologKuota'][0]['kuota_tahun']}}), </option>
         @endforeach
         
     </select>

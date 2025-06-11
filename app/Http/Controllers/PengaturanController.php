@@ -85,7 +85,15 @@ class PengaturanController extends AppBaseController
 			return redirect(route('pengaturans.index'));
 		}
 
-		$psikolog = Psikolog::where('status', 1)->get();
+		$bulan = Carbon::now()->month;
+
+		$psikolog = Psikolog::with(['PsikologKuota' => function ($query) use ($bulan) {
+			$query->where('bulan', $bulan);
+		}])
+		->where('status', 1)
+		->get();
+
+		// dd($psikolog[0]['PsikologKuota'][0]['kuota_hari']);
 
 		return view('pengaturans.edit')->with([
 			'pengaturan' => $pengaturan,
