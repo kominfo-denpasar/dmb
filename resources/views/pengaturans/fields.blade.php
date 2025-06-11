@@ -6,9 +6,18 @@
 
 <!-- Value Field -->
 <div class="form-group col-sm-12">
+@if($pengaturan->value_type=="textarea")
     {!! Form::label('value', 'Value:') !!}
     {!! Form::textarea('value', null, ['class' => 'form-control']) !!}
+@elseif($pengaturan->value_type=="number")
+    {!! Form::label('value', 'Value:') !!}
+    {!! Form::number('value', null, ['class' => 'form-control']) !!}
+@else
+    {!! Form::label('value', 'Value:') !!}
+    {!! Form::text('value', null, ['class' => 'form-control']) !!}
+@endif
 </div>
+
 
 <!-- Value Type Field -->
 <div class="form-group col-sm-12">
