@@ -136,7 +136,7 @@
 								<tbody>
 									<tr>
 										<td>
-											[data anamnesis]
+											{{$konseling->anamnesis}}
 										</td>
 									</tr>
 								</tbody>

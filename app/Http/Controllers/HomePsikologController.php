@@ -252,6 +252,7 @@ class HomePsikologController extends Controller
 			'hasil',
 			'kesimpulan',
 			'saran',
+			'anamnesis',
 			'berkas_pendukung', 
 		)
 		->first();
@@ -503,6 +504,7 @@ class HomePsikologController extends Controller
 			'keluhan_id'    => 'required',
 			'konseling_id'  => 'required',
 			'hasil'     	=> 'required',
+			'anamnesis'     => 'required',
 			'masalah'     	=> 'required|array',
 			'kesimpulan'    => 'required',
 			'saran'     	=> 'required',
@@ -544,6 +546,7 @@ class HomePsikologController extends Controller
 		$konseling->hasil = $request->hasil;
 		$konseling->kesimpulan = $request->kesimpulan;
 		$konseling->saran = $request->saran;
+		$konseling->anamnesis = $request->anamnesis;
 		$konseling->keluhan_id = $request->keluhan_id;
 		$konseling->status = 2;
 		$konseling->updated_at = Carbon::now();
