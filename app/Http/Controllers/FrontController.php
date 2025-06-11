@@ -324,6 +324,7 @@ class FrontController extends Controller
 	public function surveiHasil()
 	{
 		if(Session::get('success') && Session::get('hasil')) {
+			// dd(Session::get('success'));
 			return view('front.survei_hasil')
 				->with([
 					'success' => Session::get('success'), 
@@ -341,12 +342,13 @@ class FrontController extends Controller
 	 */
 	public function konselingReg()
 	{
-		if(Session::get('success') && Session::get('mas_id')) {
+		if(Session::get('success') || Session::get('mas_id')) {
 			return view('front.konseling_reg', [
 				'mas_id' => Session::get('mas_id'), 
 				'success' => Session::get('success')]
 			);
 		} else {
+			dd('success: '.Session::get('success'), 'mas_id: '.Session::get('mas_id'));
 			return redirect()->route('front.survei-intro');
 		}
 	}
@@ -402,24 +404,29 @@ class FrontController extends Controller
 		//cek otp
 		$otp = (new Otp)->validate($request->mas_id, $request->otp);
 
-		if ($otp->status) {
-			// ganti status masyarakat
-			$masyarakat = Masyarakat::where('token', $request->mas_id)
-				->update([
-					'status' => '1'
-				]);
-
-			return redirect()->route('front.konseling-keluhan', $request->mas_id)
+		return redirect()->route('front.konseling-keluhan', $request->mas_id)
 				->with([
 					'keluhan' => true
 				]);
-		} else {
-			// jika salah
-			return redirect()->route('front.konseling-reg')->with([
-				'success' => $otp->message,
-				'mas_id' => $request->mas_id
-			]);
-		}
+
+		// if ($otp->status) {
+		// 	// ganti status masyarakat
+		// 	$masyarakat = Masyarakat::where('token', $request->mas_id)
+		// 		->update([
+		// 			'status' => '1'
+		// 		]);
+
+		// 	return redirect()->route('front.konseling-keluhan', $request->mas_id)
+		// 		->with([
+		// 			'keluhan' => true
+		// 		]);
+		// } else {
+		// 	// jika salah
+		// 	return redirect()->route('front.konseling-reg')->with([
+		// 		'success' => $otp->message,
+		// 		'mas_id' => $request->mas_id
+		// 	]);
+		// }
 	}
 
 	/**
@@ -460,7 +467,6 @@ class FrontController extends Controller
 		->first();
 
 		// dd($keluhan);
-
 		if($keluhan && $konseling) {
 			// dd('test');
 			// jika sudah mengisi keluhan & status konseling belum disetujui dan belum selesai
@@ -470,7 +476,7 @@ class FrontController extends Controller
 			]);
 		} elseif (!$keluhan) {
 			return view('front.konseling_keluhan', ['masyarakat' => $masyarakat]);
-		} elseif ($keluhan->jadwal_id == null) {
+		} elseif ($keluhan->jadwal_tgl == null) {
 			//redirect to jadwal
 			return redirect()->route('front.konseling-jadwal', $id)->with([
 				'mas_id' => $id

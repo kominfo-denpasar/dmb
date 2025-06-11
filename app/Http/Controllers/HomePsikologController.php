@@ -594,14 +594,13 @@ class HomePsikologController extends Controller
 		$keluhan->updated_at = Carbon::now();
 		$keluhan->save(['timestamps' => FALSE]);
 
-		$konseling = Konseling::where([
-			'psikolog_id' => $this->getUser()->psikolog_id,
-			'mas_id' => $keluhan->mas_id,
-			'status' => 1
-		])->latest()->first();
-		$konseling->status = 3;
-		$konseling->updated_at = Carbon::now();
-		$konseling->save(['timestamps' => FALSE]);
+		$konseling = Konseling::where('psikolog_id', $this->getUser()->psikolog_id)
+			->where('mas_id', $keluhan->mas_id)
+			->whereIn('status', [0, 1])
+			->update([
+				'status' => 3,
+				'updated_at' => Carbon::now(),
+			]);
 
 		if($keluhan && $konseling) {
 			// get data masyarakat
