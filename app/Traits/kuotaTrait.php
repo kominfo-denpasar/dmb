@@ -9,60 +9,86 @@ use Carbon\Carbon;
 
 trait kuotaTrait
 {
-    public function cekKuotaPsikolog($psikologId): array
-    {
-        $now = Carbon::now();
-        $bulan = $now->month;
-        $tahun = $now->year;
-        $tanggalHariIni = $now->toDateString();
+	public function cekKuotaPsikolog($psikologId): array
+	{
+		$now = Carbon::now();
+		$bulan = $now->month;
+		$tahun = $now->year;
+		$tanggalHariIni = $now->toDateString();
 
-        // Ambil atau buat kuota psikolog bulan ini
-        $kuota = PsikologKuota::firstOrCreate(
-            ['psikolog_id' => $psikologId, 'bulan' => $bulan],
-            ['kuota_hari' => 1, 'kuota_bulan' => 2, 'kuota_tahun' => 10]
-        );
+		// ambil kuota psikolog dari tabel pengaturan
+		$kuotaPsikolog = Pengaturan::where('slug', 'kuota-psikolog')->first();
 
-        // Ambil kuota sistem total
-        $kuotaSistem = Pengaturan::where('slug', 'kuota-total')->first();
-        $kuotaSistemMax = $kuotaSistem ? (int) $kuotaSistem->value : 100; // Default 100 jika tidak ada pengaturan
+		if ($kuotaPsikolog && $kuotaPsikolog->value) {
+			// Pisahkan string menjadi array
+			[$kuotaHari, $kuotaBulan, $kuotaTahun] = explode('|', $kuotaPsikolog->value);
+			
+			// Konversi ke integer
+			$kuotaHari = (int) $kuotaHari;
+			$kuotaBulan = (int) $kuotaBulan;
+			$kuotaTahun = (int) $kuotaTahun;
 
-        // Hitung pemakaian kuota
-        $totalSistem = keluhan::whereMonth('jadwal_alt2_tgl', $bulan)
-            ->whereYear('jadwal_alt2_tgl', $tahun)
-            ->count();
+			// Simpan atau ambil kuota psikolog
+			$kuota = PsikologKuota::firstOrCreate(
+				[
+					'psikolog_id' => $psikologId,
+					'bulan' => $bulan
+				],
+				[
+					'kuota_hari' => $kuotaHari,
+					'kuota_bulan' => $kuotaBulan,
+					'kuota_tahun' => $kuotaTahun,
+				]
+			);
+		} else {
+			// Ambil atau buat kuota psikolog default
+			$kuota = PsikologKuota::firstOrCreate(
+				['psikolog_id' => $psikologId, 'bulan' => $bulan],
+				['kuota_hari' => 1, 'kuota_bulan' => 2, 'kuota_tahun' => 10]
+			);
+		}
 
-        $totalHari = keluhan::where('psikolog_id', $psikologId)
-            ->where('status', '!=', 3) // Status tidak 3 (batal)
-            ->whereDate('jadwal_alt2_tgl', $tanggalHariIni)
-            ->count();
+		// Ambil kuota sistem total
+		$kuotaSistem = Pengaturan::where('slug', 'kuota-total')->first();
+		$kuotaSistemMax = $kuotaSistem ? (int) $kuotaSistem->value : 100; // Default 100 jika tidak ada pengaturan
 
-        $totalBulan = keluhan::where('psikolog_id', $psikologId)
-            ->where('status', '!=', 3) // Status tidak 3 (batal)
-            ->whereMonth('jadwal_alt2_tgl', $bulan)
-            ->whereYear('jadwal_alt2_tgl', $tahun)
-            ->count();
+		// Hitung pemakaian kuota
+		$totalSistem = keluhan::whereMonth('jadwal_alt2_tgl', $bulan)
+			->whereYear('jadwal_alt2_tgl', $tahun)
+			->count();
 
-        $totalTahun = keluhan::where('psikolog_id', $psikologId)
-            ->where('status', '!=', 3) // Status tidak 3 (batal)
-            ->whereYear('jadwal_alt2_tgl', $tahun)
-            ->count();
+		$totalHari = keluhan::where('psikolog_id', $psikologId)
+			->where('status', '!=', 3) // Status tidak 3 (batal)
+			->whereDate('jadwal_alt2_tgl', $tanggalHariIni)
+			->count();
 
-        if ($totalSistem >= $kuotaSistemMax) {
-            return ['status' => false, 'message' => 'Kuota sistem sudah penuh.'];
-        }
+		$totalBulan = keluhan::where('psikolog_id', $psikologId)
+			->where('status', '!=', 3) // Status tidak 3 (batal)
+			->whereMonth('jadwal_alt2_tgl', $bulan)
+			->whereYear('jadwal_alt2_tgl', $tahun)
+			->count();
 
-        if ($totalHari >= $kuota->kuota_hari) {
-            return ['status' => false, 'message' => 'Kuota harian psikolog sudah habis.'];
-        }
+		$totalTahun = keluhan::where('psikolog_id', $psikologId)
+			->where('status', '!=', 3) // Status tidak 3 (batal)
+			->whereYear('jadwal_alt2_tgl', $tahun)
+			->count();
 
-        if ($totalBulan >= $kuota->kuota_bulan) {
-            return ['status' => false, 'message' => 'Kuota bulanan psikolog sudah habis.'];
-        }
+		if ($totalSistem >= $kuotaSistemMax) {
+			return ['status' => false, 'message' => 'Kuota sistem sudah penuh.'];
+		}
 
-        if ($totalTahun >= $kuota->kuota_tahun) {
-            return ['status' => false, 'message' => 'Kuota tahunan psikolog sudah habis.'];
-        }
+		if ($totalHari >= $kuota->kuota_hari) {
+			return ['status' => false, 'message' => 'Kuota harian psikolog sudah habis.'];
+		}
 
-        return ['status' => true];
-    }
+		if ($totalBulan >= $kuota->kuota_bulan) {
+			return ['status' => false, 'message' => 'Kuota bulanan psikolog sudah habis.'];
+		}
+
+		if ($totalTahun >= $kuota->kuota_tahun) {
+			return ['status' => false, 'message' => 'Kuota tahunan psikolog sudah habis.'];
+		}
+
+		return ['status' => true];
+	}
 }
