@@ -120,6 +120,10 @@ Route::group([
 Route::get('/test', [App\Http\Controllers\FrontController::class, 'testHalaman']);
 Route::get('/notif', [App\Http\Controllers\FrontController::class, 'testNotif']);
 
+Route::get('/error', function () {
+    throw new Exception('My first GlitchTip error!');
+});
+
 
 
 

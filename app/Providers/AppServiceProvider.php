@@ -12,7 +12,13 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
-        $this->app['request']->server->set('HTTPS', true);
+        if($this->app->environment('production')) {
+            // Force HTTPS in production environment
+            $this->app['request']->server->set('HTTPS', true);
+        } else {
+            // Force HTTP in non-production environments
+            $this->app['request']->server->set('HTTPS', false);
+        }
     }
 
     /**
@@ -21,8 +27,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         //
-	if($this->app->environment('production')) {
+	    if($this->app->environment('production')) {
     		\URL::forceScheme('https');
-	}
+	    } else {
+            \URL::forceScheme('http');
+        }
     }
 }
