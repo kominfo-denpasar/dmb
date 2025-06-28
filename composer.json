@@ -18,6 +18,7 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",
+        "logto/sdk": "^0.3.0",
         "scyllaly/hcaptcha": "^4.4",
         "sentry/sentry-laravel": "^4.15",
         "spatie/laravel-activitylog": "^4.10",

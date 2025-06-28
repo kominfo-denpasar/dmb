@@ -50,7 +50,11 @@ Route::get('/privasi', [App\Http\Controllers\FrontController::class, 'privasi'])
 Route::get('/artikel/{slug}', [App\Http\Controllers\FrontController::class, 'blogDetail'])->name('front.blog-detail');
 Route::get('/artikel', [App\Http\Controllers\FrontController::class, 'blogList'])->name('front.blog-list');
 
+
 Auth::routes();
+Route::get('/login/sso', [App\Http\Controllers\Auth\SSOController::class, 'login']);
+Route::get('/callback', [App\Http\Controllers\Auth\SSOController::class, 'callback']);
+
 
 Route::group([
     'middleware' => ['auth', 'web']
