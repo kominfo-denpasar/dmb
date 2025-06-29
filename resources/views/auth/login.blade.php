@@ -13,6 +13,11 @@
             <div class="card">
                 <div class="card-body login-card-body">
                     <p class="login-box-msg">Input email dan password Anda</p>
+                    @if (session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
                     <form method="post" action="{{ url('/login') }}">
                         @csrf

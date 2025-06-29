@@ -8,76 +8,90 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use \Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use \Spatie\Activitylog\facades\Activity;
+use App\Services\LogtoService;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Login Controller
-    |--------------------------------------------------------------------------
-    |
-    | This controller handles authenticating users for the application and
-    | redirecting them to your home screen. The controller uses a trait
-    | to conveniently provide its functionality to your applications.
-    |
-    */
+	protected LogtoService $ssoService;
 
-    use AuthenticatesUsers;
+	/*
+	|--------------------------------------------------------------------------
+	| Login Controller
+	|--------------------------------------------------------------------------
+	|
+	| This controller handles authenticating users for the application and
+	| redirecting them to your home screen. The controller uses a trait
+	| to conveniently provide its functionality to your applications.
+	|
+	*/
 
-    /**
-     * Where to redirect users after login.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/admin/home';
+	use AuthenticatesUsers;
 
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
-    }
+	/**
+	 * Where to redirect users after login.
+	 *
+	 * @var string
+	 */
+	protected $redirectTo = '/admin/home';
 
-    /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     */
-    protected function validateLogin(Request $request)
-    {
-        $this->validate($request, [
-            $this->username() => 'required|string',
-            'password' => 'required|string',
-            'h-captcha-response' => 'required|HCaptcha',
-        ]);
-    }
-    
-    // override method yang dipanggil setelah user berhasil login
-    protected function authenticated(Request $request, $user) {
-        activity()
-        ->causedBy($user)
-        ->log('login ke sistem');
+	/**
+	 * Create a new controller instance.
+	 *
+	 * @return void
+	 */
+	public function __construct(LogtoService $logto)
+	{
+		$this->middleware('guest')->except('logout');
+		$this->middleware('auth')->only('logout');
+		$this->ssoService = $logto;
+	}
 
-        return redirect()->intended($this->redirectTo);
-    }
+	/**
+	 * Validate the user login request.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return void
+	 */
+	protected function validateLogin(Request $request)
+	{
+		$this->validate($request, [
+			$this->username() => 'required|string',
+			'password' => 'required|string',
+			'h-captcha-response' => 'required|HCaptcha',
+		]);
+	}
+	
+	// override method yang dipanggil setelah user berhasil login
+	protected function authenticated(Request $request, $user) {
+		activity()
+			->causedBy($user)
+			->log('login ke sistem');
 
-    //override  method logout untuk mencatat log aktivitas logout
-    public function logout(Request $request) {
-        $user = auth()->user();
-        
-        activity()
-        ->causedBy($user)
-        ->log('Logout dari sistem');
+		return redirect()->intended($this->redirectTo);
+	}
 
-        $this->guard()->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        
-        return redirect('/');
-    }
+	//override method logout
+	public function logout(Request $request) {
+		// dd(session()->all());
+
+		// Jika menggunakan SSO, redirect ke URL logout SSO
+		$logoutUrl = $this->ssoService->signOut();
+
+		// cata aktivitas
+		$user = auth()->user();
+		activity()
+			->causedBy($user)
+			->log('Logout dari sistem');
+
+		$this->guard()->logout();
+
+		// Hapus semua session yang ada
+		Session::flush();
+		$request->session()->flush();
+		$request->session()->invalidate();
+		$request->session()->regenerateToken();
+		
+		return Redirect::to($logoutUrl);
+	}
 }

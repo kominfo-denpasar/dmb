@@ -52,8 +52,13 @@ Route::get('/artikel', [App\Http\Controllers\FrontController::class, 'blogList']
 
 
 Auth::routes();
-Route::get('/login/sso', [App\Http\Controllers\Auth\SSOController::class, 'login']);
-Route::get('/callback', [App\Http\Controllers\Auth\SSOController::class, 'callback']);
+Route::middleware('web')->group(function () {
+    Route::get('/login/sso', [App\Http\Controllers\Auth\SSOController::class, 'login']);
+    Route::get('/callback', [App\Http\Controllers\Auth\SSOController::class, 'callback']);
+    Route::get('/me', [App\Http\Controllers\Auth\SSOController::class, 'me']);
+    Route::get('/logout/sso', [App\Http\Controllers\Auth\SSOController::class, 'logout']);
+
+});
 
 
 Route::group([
