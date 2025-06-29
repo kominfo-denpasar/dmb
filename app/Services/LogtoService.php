@@ -34,7 +34,7 @@ class LogtoService
 	public function loginUrl(): string
 	{
 		// Redirect user ke halaman login Logto
-		return $this->client->signIn('http://127.0.0.1:8000/callback');
+		return $this->client->signIn(config('logto.redirect_uri'));
 	}
 
 	public function handleCallback()
