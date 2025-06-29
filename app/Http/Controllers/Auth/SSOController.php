@@ -40,7 +40,10 @@ class SSOController extends Controller
 		$user = User::where('email', $email)->first();
 
 		if (!$user) {
-			return redirect('/login')->with('error', 'Akun Anda belum terdaftar pada Aplikasi ini. Silakan registrasi manual.');
+			// Jika user tidak ditemukan, redirect ke halaman login dengan pesan error
+			$url = $this->logto->signOut(); // Logout dari Logto
+			Session::flush(); // Hapus semua session
+			return redirect($url)->with('error', 'Akun Anda belum terdaftar pada Aplikasi ini. Silakan registrasi manual.');
 		}
 
 		Auth::login($user);
